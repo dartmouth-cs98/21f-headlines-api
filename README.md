@@ -7,7 +7,7 @@ TODO: short project description, some sample screenshots or mockups
 
 ## Architecture
 
-TODO:  descriptions of code organization and tools and libraries used
+- Node.js / Express server
 
 ## Setup
 
