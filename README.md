@@ -1,16 +1,17 @@
 # Headlines
-![Team Photo](Insert a Team Photo URL here)
-[*how?*](https://help.github.com/articles/about-readmes/#relative-links-and-image-paths-in-readme-files)
 
-TODO: short project description, some sample screenshots or mockups
+![Team Photo](https://github.com/dartmouth-cs98/21f-headlines/blob/main/DocumentationImages/teamselfie.jpeg)
 
 ## Architecture
 
 - Node.js / Express server
+- Talks to Question Gen (for scraping news and generating questions) and talks to database (which has game and user data)
 
 ## Setup
 
-TODO: how to get the project dev environment up and running, npm install etc
+`npm install`
+
+`npm start`
 
 ## Deployment
 
