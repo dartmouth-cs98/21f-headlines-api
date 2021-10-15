@@ -5,7 +5,7 @@
 ## Architecture
 
 - Node.js / Express server
-- Talks to Question Gen (for scraping news and generating questions) and talks to database (which has game and user data)
+- Talks to Question Gen (for scraping news and generating questions) and talks to the database (which has game and user data).
 
 ## Setup
 
@@ -15,7 +15,7 @@
 
 ## Deployment
 
-TODO: how to deploy the project
+TBD
 
 ## Authors
 
