@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /**
  * This code is taken from the MongoDB nodejs-quickstart GitHub repo
  * https://github.com/mongodb-developer/nodejs-quickstart/blob/master/connection.js
@@ -13,7 +14,12 @@ async function main() {
      * Connection URI. Update <username>, <password>, and <your-cluster-url> to reflect your cluster.
      * See https://docs.mongodb.com/ecosystem/drivers/node/ for more details
      */
-    const uri = "mongodb+srv://headlines_user:e202R1PXHho11bIU@cluster0.vapw9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+    
+    // test uri
+    const uri = "mongodb+srv://user1:gj5VVQQPy0Mz2S2k@cluster0.efzmv.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+    
+    // headlines uri, credentials incorrect
+    // const uri = "mongodb+srv://headlines_user:e202R1PXHho11bIU@cluster0.vapw9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 
     /**
      * The Mongo Client you will use to interact with your database
@@ -50,4 +56,4 @@ async function listDatabases(client) {
 
     console.log("Databases:");
     databasesList.databases.forEach(db => console.log(` - ${db.name}`));
-};
+}
