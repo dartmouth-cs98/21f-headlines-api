@@ -32,7 +32,7 @@ export const addArticle = (articleInfo) => {
   article.category = articleInfo.category; 
 
   try {
-    const savedArticle = await article.save();
+    const savedArticle = article.save();
     return savedArticle;
   } catch (error) {
     throw new Error(`unable to add article to database: ${error}`);
