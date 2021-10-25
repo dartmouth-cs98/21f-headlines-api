@@ -19,7 +19,7 @@ router.route('/addArticle')
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
-});
+  });
 
 router.route(':articleID/addQuestion')
   .post(async (req, res) => {
@@ -28,12 +28,11 @@ router.route(':articleID/addQuestion')
       const article = Articles.getArticle(req.params.articleID);
       const qns = article.questions;
       qns.push(qn);
-      const updatedArticle= await Articles.updateArticle(req.params.articleID, { questions: qns});
+      const updatedArticle = await Articles.updateArticle(req.params.articleID, { questions: qns });
       res.json(updatedArticle);
-
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
-});
+  });
 
 export default router;
