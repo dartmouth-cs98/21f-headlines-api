@@ -14,7 +14,7 @@ export const addQuestion = (qnInfo) => {
     qn.manually_approved = qnInfo.manually_approved; 
   
     try {
-      const savedQn = await qn.save();
+      const savedQn = qn.save();
       return savedQn;
     } catch (error) {
       throw new Error(`unable to add question to database: ${error}`);
