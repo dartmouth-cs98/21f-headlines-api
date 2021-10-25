@@ -25,11 +25,12 @@ router.route(':articleID/addQuestion')
   .post(async (req, res) => {
     try {
       const qn = await Questions.addQuestion(req.body);
-      const qns = qn.article_ref.questions;
+      const article = Articles.getArticle(req.params.articleID);
+      const qns = article.questions;
       qns.push(qn);
-      const article = await Articles.updateArticle(req.params.articleID, { events });
-      res.json(article);
-      
+      const updatedArticle= await Articles.updateArticle(req.params.articleID, { questions: qns});
+      res.json(updatedArticle);
+
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
