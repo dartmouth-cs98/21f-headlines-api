@@ -29,6 +29,7 @@ router.route(':articleID/addQuestion')
       qns.push(qn);
       const article = await Articles.updateArticle(req.params.articleID, { events });
       res.json(article);
+      
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
