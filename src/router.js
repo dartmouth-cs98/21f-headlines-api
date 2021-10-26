@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import * as Articles from './controllers/article_controller';
-import * as Questions from './controllers/question_controller';
+// import * as Questions from './controllers/question_controller';
 
 const router = Router();
 
@@ -15,13 +15,13 @@ router.route('/addArticle')
   .post(async (req, res) => {
     try {
       const id = Articles.createArticle(req.body.articleInfo);
-      const qns = [];
-      req.body.questions.forEach((element) => {
-        const qnId = Questions.createQuestion(id, element);
-        qns.push(qnId);
-      });
-      const updatedArticle = Articles.updateArticle(id, { questions: qns });
-      res.json(updatedArticle);
+      // const qns = [];
+      // req.body.questions.forEach((element) => {
+      //   const qnId = Questions.createQuestion(id, element);
+      //   qns.push(qnId);
+      // });
+      // const updatedArticle = Articles.updateArticle(id, { questions: qns });
+      res.json(id);
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }

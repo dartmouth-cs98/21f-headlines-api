@@ -48,3 +48,5 @@ export const updateArticle = async (id, articleInfo) => {
     throw new Error(`updating article error: ${error}`);
   }
 };
+
+// curl -X POST -H "Content-Type: application/json" -d '{"articleInfo": {"name":"test article","source": "password", "url":"www.hheh.com"}, "questions": [{"statement": "hello?"}, {"statement": "how are you?"}]}' "https://cs98-headlines.herokuapp.com/addArticle"
