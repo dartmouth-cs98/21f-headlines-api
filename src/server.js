@@ -1,8 +1,10 @@
 import express from 'express';
+import passport from 'passport';
 import cors from 'cors';
 import path from 'path';
 import morgan from 'morgan';
 import mongoose from 'mongoose';
+import apiRouter from './router';
 
 // DB Setup
 const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost/platform_db';
@@ -35,6 +37,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // To parse the incoming requests with JSON payloads
 
 // additional init stuff should go before hitting the routing
+app.use(passport.initialize());
+app.use('/api', apiRouter);
 
 // default index route
 app.get('/', (req, res) => {
