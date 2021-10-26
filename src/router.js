@@ -13,6 +13,7 @@ router.route('/articles')
 router.route('/addArticle')
   .post(async (req, res) => {
     try {
+      console.log('hello in router');
       const res = Articles.addArticle({ name: 'name', source: 'source' });
       res.json(res);
     } catch (error) {
