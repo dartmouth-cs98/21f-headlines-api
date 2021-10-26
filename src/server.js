@@ -1,4 +1,5 @@
 import express from 'express';
+import passport from 'passport';
 import cors from 'cors';
 import path from 'path';
 import morgan from 'morgan';
@@ -36,6 +37,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // To parse the incoming requests with JSON payloads
 
 // additional init stuff should go before hitting the routing
+app.use(passport.initialize());
 app.use('/', apiRouter);
 
 // default index route
