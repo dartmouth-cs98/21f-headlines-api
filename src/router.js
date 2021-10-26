@@ -14,8 +14,7 @@ router.route('/addArticle')
   .post(async (req, res) => {
     try {
       res.send('hello in router');
-      // const temp = Articles.addArticle({ name: 'name', source: 'source' });
-      // res.json(temp);
+      // to do later
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
