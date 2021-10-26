@@ -40,7 +40,7 @@ app.use('/', apiRouter);
 
 // default index route
 app.get('/', (req, res) => {
-  res.send('hi from server');
+  res.send('hi from server.js');
 });
 
 // START THE SERVER

@@ -1,7 +1,7 @@
 import Article from '../models/article_model';
 
 export const getArticles = (req, res) => {
-  Article.find()
+  Article.find().populate('questions')
     .then((result) => {
       res.json(result);
     })

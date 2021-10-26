@@ -11,12 +11,11 @@ router.route('/articles')
   .get(Articles.getArticles);
 
 router.route('/addArticle')
-  .post((req, res) => {
+  .post(async (req, res) => {
     try {
-      const temp = Articles.addArticle({ name: 'name', source: 'source' });
-      res.json(temp);
+      res.send('hello in router');
+      // to do later
     } catch (error) {
-      res.send('hello error');
       res.status(422).send({ error: error.toString() });
     }
   });
