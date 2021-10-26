@@ -38,11 +38,11 @@ app.use(express.json()); // To parse the incoming requests with JSON payloads
 
 // additional init stuff should go before hitting the routing
 app.use(passport.initialize());
-app.use('/api', apiRouter);
+app.use('/', apiRouter);
 
 // default index route
 app.get('/', (req, res) => {
-  res.send('hi from server');
+  res.send('hi from server.js');
 });
 
 // START THE SERVER
