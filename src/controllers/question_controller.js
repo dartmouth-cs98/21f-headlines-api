@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 import Question from '../models/question_model';
 
 export const createQuestion = async (articleId, qnInfo) => {
