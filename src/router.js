@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import * as Articles from './controllers/article_controller';
 // import * as Questions from './controllers/question_controller';
-import * as ArticleController from './controllers/article_controller';
 import * as UserController from './controllers/user_controller';
 import { requireSignin } from './services/passport';
 
@@ -12,7 +11,7 @@ router.get('/api', (req, res) => {
 });
 
 router.route('/articles')
-  .get(ArticleController.getArticles);
+  .get(Articles.getArticles);
 
 router.route('/addArticle')
   .post(async (req, res) => {
