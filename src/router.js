@@ -17,6 +17,7 @@ router.route('/articles')
 router.route('/addArticle')
   .post(async (req, res) => {
     try {
+      console.log('hi from router\'s addArticle');
       const id = Articles.createArticle(req.body.articleInfo);
       // const qns = [];
       // req.body.questions.forEach((element) => {
