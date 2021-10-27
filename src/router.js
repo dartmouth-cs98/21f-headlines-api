@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import * as Articles from './controllers/article_controller';
-// import * as Questions from './controllers/question_controller';
+import * as Questions from './controllers/question_controller';
 import * as UserController from './controllers/user_controller';
 import { requireSignin } from './services/passport';
 
@@ -11,20 +11,35 @@ router.get('/api', (req, res) => {
 });
 
 router.route('/articles')
-  .get(Articles.getArticles);
+  .get(async(req, res)=>{
+    try{
+      const articles = await Articles.getArticles();
+      res.json(articles);
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+router.route('/article/:articleID')
+  .get(async (req, res) => {
+    try {
+      const article = await Articles.getArticle(req.params.articleID);
+      res.json(article);
+    } catch (error) {
+      res.status(500).json({ error });
+    }
+  });
 
 router.route('/addArticle')
   .post(async (req, res) => {
     try {
-      console.log('hi from router\'s addArticle');
-      const id = Articles.createArticle(req.body.articleInfo);
-      // const qns = [];
-      // req.body.questions.forEach((element) => {
-      //   const qnId = Questions.createQuestion(id, element);
-      //   qns.push(qnId);
-      // });
-      // const updatedArticle = Articles.updateArticle(id, { questions: qns });
-      res.json(id);
+      const articleId = await Articles.createArticle(req.body.articleInfo);
+      var qns = [];
+      for (var qn of req.body.questions){
+        const qnId = await Questions.createQuestion(articleId, qn);
+        qns.push(qnId);
+      }
+      const updatedArticle = await Articles.updateArticle(articleId, { "questions": qns });
+      res.json(updatedArticle);
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }

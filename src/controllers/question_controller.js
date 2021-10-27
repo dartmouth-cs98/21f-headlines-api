@@ -1,7 +1,6 @@
-/* eslint-disable import/prefer-default-export */
 import Question from '../models/question_model';
 
-export const createQuestion = (articleId, qnInfo) => {
+export const createQuestion = async (articleId, qnInfo) => {
   const qn = new Question();
   qn.article_ref = articleId;
   qn.statement = qnInfo.statement;
@@ -14,8 +13,8 @@ export const createQuestion = (articleId, qnInfo) => {
   qn.question_source = qnInfo.question_source;
   qn.manually_approved = qnInfo.manually_approved;
   try {
-    const savedQn = qn.save();
-    return savedQn._id;
+    const savedQn = await qn.save();
+    return savedQn.id;
   } catch (error) {
     throw new Error(`unable to create or add question to database: ${error}`);
   }
