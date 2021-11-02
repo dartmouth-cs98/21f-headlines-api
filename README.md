@@ -14,6 +14,13 @@
 - `controllers/`: contains controllers for different entities
 - `models/`: contains data models for different entities
 
+## Endpoints
+
+#### Questions
+* `/getQuestions`: get a random set of questions; all questions have been created in the last week 
+  * parameter: `num`: how many questions get
+  * sample request `/getquestions?num=3`: will get 3 random questions that have all been created in the last week
+
 ## Setup
 
 `npm install`
