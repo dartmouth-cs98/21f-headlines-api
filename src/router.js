@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import * as ArticleController from './controllers/article_controller';
 import * as UserController from './controllers/user_controller';
+import * as QuestionController from './controllers/question_controller';
 import { requireSignin } from './services/passport';
 
 const router = Router();
@@ -11,6 +12,15 @@ router.get('/api', (req, res) => {
 
 router.route('/articles')
   .get(ArticleController.getArticles);
+
+router.get('/getQuestions', async (req, res) => {
+  try {
+    const questions = await QuestionController.getNumQuestions(req.query.num);
+    res.json({ questions });
+  } catch (error) {
+    res.status(500).send({ error: error.toString() });
+  }
+});
 
 router.route('/addArticle')
   .post(async (req, res) => {
@@ -24,7 +34,7 @@ router.route('/addArticle')
 
 router.post('/signin', requireSignin, async (req, res) => {
   try {
-    const token = UserController.signin(req.user);
+    const token = await UserController.signin(req.user);
     res.json({ token, email: req.user.email });
   } catch (error) {
     res.status(422).send({ error: error.toString() });
