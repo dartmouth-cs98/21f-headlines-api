@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 import Question from '../models/question_model';
 
 export const createQuestion = async (articleId, qnInfo) => {
@@ -19,4 +18,14 @@ export const createQuestion = async (articleId, qnInfo) => {
   } catch (error) {
     throw new Error(`unable to create or add question to database: ${error}`);
   }
+};
+
+export const getNumQuestions = async (num) => {
+  // used this: https://stackoverflow.com/questions/2824157/random-record-from-mongodb
+  // and this: https://stackoverflow.com/questions/33194825/find-objects-created-in-last-week-in-mongo/46906862
+  const res = await Question.aggregate([
+    { $match: { createdAt: { $gte: new Date(new Date() - 7 * 60 * 60 * 24 * 1000) } } },
+    { $sample: { size: parseInt(num, 10) } },
+  ]);
+  return res;
 };

@@ -29,6 +29,15 @@ router.route('/article/:articleID')
     }
   });
 
+router.get('/getQuestions', async (req, res) => {
+  try {
+    const questions = await Questions.getNumQuestions(req.query.num);
+    res.json({ questions });
+  } catch (error) {
+    res.status(500).send({ error: error.toString() });
+  }
+});
+
 router.route('/addArticle')
   .post(async (req, res) => {
     try {
@@ -49,7 +58,7 @@ router.route('/addArticle')
 
 router.post('/signin', requireSignin, async (req, res) => {
   try {
-    const token = Users.signin(req.user);
+    const token = await Users.signin(req.user);
     res.json({ token, email: req.user.email });
   } catch (error) {
     res.status(422).send({ error: error.toString() });
