@@ -31,7 +31,7 @@ router.route('/article/:articleID')
 
 router.get('/getQuestions', async (req, res) => {
   try {
-    const questions = await QuestionController.getNumQuestions(req.query.num);
+    const questions = await Questions.getNumQuestions(req.query.num);
     res.json({ questions });
   } catch (error) {
     res.status(500).send({ error: error.toString() });
