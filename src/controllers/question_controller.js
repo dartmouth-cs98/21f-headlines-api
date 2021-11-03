@@ -20,3 +20,12 @@ export const createQuestion = async (articleId, qnInfo) => {
     throw new Error(`unable to create or add question to database: ${error}`);
   }
 };
+
+export const getQuestions = async () => {
+  try {
+    const qns = await Question.find({}).populate('article_ref');
+    return qns;
+  } catch (error) {
+    throw new Error(`get qns error: ${error}`);
+  }
+};

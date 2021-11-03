@@ -3,7 +3,9 @@ import mongoose, { Schema } from 'mongoose';
 const ArticleSchema = new Schema({
   name: String,
   source: String,
-  url: String,
+  url: {
+    type: String, unique: true, required: true, dropDups: true,
+  },
   image_url: String,
   article_text: String,
   summary: String,
