@@ -20,6 +20,15 @@ export const createQuestion = async (articleId, qnInfo) => {
   }
 };
 
+export const getQuestions = async () => {
+  try {
+    const qns = await Question.find({}).populate('article_ref');
+    return qns;
+  } catch (error) {
+    throw new Error(`get qns error: ${error}`);
+  }
+};
+
 export const getNumQuestions = async (num) => {
   // used this: https://stackoverflow.com/questions/2824157/random-record-from-mongodb
   // and this: https://stackoverflow.com/questions/33194825/find-objects-created-in-last-week-in-mongo/46906862

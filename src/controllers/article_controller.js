@@ -9,9 +9,9 @@ export const getArticles = async () => {
   }
 };
 
-export const getArticle = async (id) => {
+export const getArticle = async (info) => {
   try {
-    const article = await Article.findById(id).populate('questions');
+    const article = await Article.findOne(info).populate('questions');
     return article;
   } catch (error) {
     throw new Error(`get article error: ${error}`);

@@ -22,7 +22,7 @@ router.route('/articles')
 router.route('/article/:articleID')
   .get(async (req, res) => {
     try {
-      const article = await Articles.getArticle(req.params.articleID);
+      const article = await Articles.getArticle({ id: req.params.articleID });
       res.json(article);
     } catch (error) {
       res.status(500).json({ error });
@@ -51,6 +51,29 @@ router.route('/addArticle')
       }
       const updatedArticle = await Articles.updateArticle(articleId, { questions });
       res.json(updatedArticle);
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+
+router.post('/addQuestion', async (req, res) => {
+  try {
+    const article = await Articles.getArticle(req.body.articleInfo);
+    const question = await Questions.createQuestion(article.id, req.body.question);
+    const qns = article.questions;
+    qns.push(question);
+    const updatedArticle = await Articles.updateArticle(article.id, { questions: qns });
+    res.json({ updatedArticle });
+  } catch (error) {
+    res.status(422).send({ error: error.toString() });
+  }
+});
+
+router.route('/questions')
+  .get(async (req, res) => {
+    try {
+      const qns = await Questions.getQuestions();
+      res.json(qns);
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
