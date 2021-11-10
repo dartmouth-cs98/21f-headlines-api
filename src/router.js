@@ -33,16 +33,14 @@ router.route('/article/:articleID')
 // whose value is an array of articles ids as strs
 router.get('/learningArticle', async (req, res) => {
   try {
-    const idList = req.body.idList;
     const articles = [];
-
-    for (let i = 0; i < idList.length; i++) {
-      const article = await Articles.getArticle({ _id: idList[i] });
+    // eslint-disable-next-line no-restricted-syntax
+    for (const i of req.body.idList) {
+      // eslint-disable-next-line no-await-in-loop
+      const article = await Articles.getArticle({ _id: req.body.idList[i] });
       articles.push(article);
     }
-    
     res.json({ articles });
-
   } catch (error) {
     res.status(500).send({ error: error.toString() });
   }
