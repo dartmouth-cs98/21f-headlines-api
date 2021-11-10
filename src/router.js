@@ -31,13 +31,13 @@ router.route('/article/:articleID')
 
 // req.body needs to be a dict with a key "idList",
 // whose value is an array of articles ids as strs
-router.get('/learningArticle', async (req, res) => {
+router.post('/learningArticle', async (req, res) => {
   try {
     const articles = [];
     // eslint-disable-next-line no-restricted-syntax
     for (const i of req.body.idList) {
       // eslint-disable-next-line no-await-in-loop
-      const article = await Articles.getArticle({ _id: req.body.idList[i] });
+      const article = await Articles.getArticle({ _id: i });
       articles.push(article);
     }
     res.json({ articles });
