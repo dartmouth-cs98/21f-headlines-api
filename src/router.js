@@ -38,7 +38,9 @@ router.post('/learningArticle', async (req, res) => {
     for (const i of req.body.idList) {
       // eslint-disable-next-line no-await-in-loop
       const article = await Articles.getArticle({ _id: i });
-      articles.push(article);
+      if (article) {
+        articles.push(article);
+      }
     }
     res.json({ articles });
   } catch (error) {
