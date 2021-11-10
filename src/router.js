@@ -22,7 +22,7 @@ router.route('/articles')
 router.route('/article/:articleID')
   .get(async (req, res) => {
     try {
-      const article = await Articles.getArticle({ id: req.params.articleID });
+      const article = await Articles.getArticle({ _id: req.params.articleID });
       res.json(article);
     } catch (error) {
       res.status(500).json({ error });
@@ -56,9 +56,16 @@ router.route('/addArticle')
     }
   });
 
+// req.body needs to be a dictionary with two keys:
+// "articleInfo" whose value is a one key dict of form {"url": article url as str}
+// or {_id: article id as str}. Second key in req.body should be "question"
+// whose value is a dict with question info such as
+// statement, answers, correct_answer etc
+
 router.post('/addQuestion', async (req, res) => {
   try {
     const article = await Articles.getArticle(req.body.articleInfo);
+    console.log(article);
     const question = await Questions.createQuestion(article.id, req.body.question);
     const qns = article.questions;
     qns.push(question);
@@ -78,6 +85,24 @@ router.route('/questions')
       res.status(422).send({ error: error.toString() });
     }
   });
+
+// req.body needs to be a dict with a key "report",
+// whose value is a string with reporting message
+router.post('/report/:questionID', async (req, res) => {
+  try {
+    const qn = await Questions.getQuestion(req.params.questionID);
+    let { report } = qn;
+    if (report) {
+      report.push(req.body.report);
+    } else {
+      report = [req.body.report];
+    }
+    const updatedQn = await Questions.updateQuestion(qn.id, { report });
+    res.json({ updatedQn });
+  } catch (error) {
+    res.status(422).send({ error: error.toString() });
+  }
+});
 
 router.post('/signin', requireSignin, async (req, res) => {
   try {
