@@ -29,6 +29,23 @@ router.route('/article/:articleID')
     }
   });
 
+// req.body needs to be a dict with a key "idList",
+// whose value is an array of articles ids as strs
+router.get('/learningArticle', async (req, res) => {
+  try {
+    const articles = [];
+    // eslint-disable-next-line no-restricted-syntax
+    for (const i of req.body.idList) {
+      // eslint-disable-next-line no-await-in-loop
+      const article = await Articles.getArticle({ _id: req.body.idList[i] });
+      articles.push(article);
+    }
+    res.json({ articles });
+  } catch (error) {
+    res.status(500).send({ error: error.toString() });
+  }
+});
+
 router.get('/getQuestions', async (req, res) => {
   try {
     const questions = await Questions.getNumQuestions(req.query.num);
@@ -65,7 +82,6 @@ router.route('/addArticle')
 router.post('/addQuestion', async (req, res) => {
   try {
     const article = await Articles.getArticle(req.body.articleInfo);
-    console.log(article);
     const question = await Questions.createQuestion(article.id, req.body.question);
     const qns = article.questions;
     qns.push(question);
