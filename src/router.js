@@ -34,7 +34,6 @@ router.route('/article/:articleID')
 router.post('/learningArticle', async (req, res) => {
   try {
     const articles = [];
-    console.log(req.body.idList);
     // eslint-disable-next-line no-restricted-syntax
     for (const i of req.body.idList) {
       // eslint-disable-next-line no-await-in-loop
