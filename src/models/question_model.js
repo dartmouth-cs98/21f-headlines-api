@@ -11,6 +11,7 @@ const QuestionSchema = new Schema({
   dislikes: Number,
   question_source: String,
   manually_approved: Boolean,
+  report: [String],
 },
 {
   toObject: { virtuals: true },
