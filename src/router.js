@@ -38,7 +38,9 @@ router.post('/learningArticle', async (req, res) => {
     for (const i of req.body.idList) {
       // eslint-disable-next-line no-await-in-loop
       const article = await Articles.getArticle({ _id: i });
-      articles.push(article);
+      if (article) {
+        articles.push(article);
+      }
     }
     res.json({ articles });
   } catch (error) {
@@ -60,11 +62,13 @@ router.route('/addArticle')
     try {
       const articleId = await Articles.createArticle(req.body.articleInfo);
       const questions = [];
-      // eslint-disable-next-line no-restricted-syntax
-      for (const qn of req.body.questions) {
-        // eslint-disable-next-line no-await-in-loop
-        const qnId = await Questions.createQuestion(articleId, qn);
-        questions.push(qnId);
+      if (req.body.questions) {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const qn of req.body.questions) {
+          // eslint-disable-next-line no-await-in-loop
+          const qnId = await Questions.createQuestion(articleId, qn);
+          questions.push(qnId);
+        }
       }
       const updatedArticle = await Articles.updateArticle(articleId, { questions });
       res.json(updatedArticle);
@@ -74,8 +78,8 @@ router.route('/addArticle')
   });
 
 // req.body needs to be a dictionary with two keys:
-// "articleInfo" whose value is a one key dict of form {"url": article url as str}
-// or {_id: article id as str}. Second key in req.body should be "question"
+// "articleInfo" whose value is a one key dict of form {"url": "wwww.example.com"}
+// or {_id: "h192992hskas"}. Second key in req.body should be "question"
 // whose value is a dict with question info such as
 // statement, answers, correct_answer etc
 
