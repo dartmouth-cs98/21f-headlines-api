@@ -98,17 +98,15 @@ router.post('/signup', async (req, res) => {
 });
 
 // Endpoint for rating a question
-router.put('/rateQuestion/:questionId', async(req, res)=>{
-  try{
-    
+router.put('/rateQuestion/:questionId', async (req, res) => {
+  try {
     const data = req.body;
     console.log(data);
-    await Questions.rateQuestion(req.params.questionId, data["isLike"], data["change"]);
-    res.json({"success":"True"});
-  }catch (error){
-    res.status(420).send({error:error.toString()})
+    await Questions.rateQuestion(req.params.questionId, data.isLike, data.change);
+    res.json({ success: 'true' });
+  } catch (error) {
+    res.status(420).send({ error: error.toString() });
   }
 });
-
 
 export default router;
