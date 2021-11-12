@@ -12,6 +12,7 @@ export const createQuestion = async (articleId, qnInfo) => {
   qn.dislikes = 0;
   qn.question_source = qnInfo.question_source;
   qn.manually_approved = qnInfo.manually_approved;
+  qn.report = [];
   try {
     const savedQn = await qn.save();
     return savedQn.id;
@@ -40,6 +41,7 @@ export const getNumQuestions = async (num) => {
 };
 
 
+
 // Create a function that given the id of a question, adds or substracts to a like 
 export const rateQuestion = async (id, isLike, change) =>{
   
@@ -60,4 +62,24 @@ export const rateQuestion = async (id, isLike, change) =>{
   }
   
 }
+
+
+export const getQuestion = async (id) => {
+  try {
+    const qn = await Question.findById(id).populate('article_ref');
+    return qn;
+  } catch (error) {
+    throw new Error(`get question error: ${error}`);
+  }
+};
+
+export const updateQuestion = async (id, qnInfo) => {
+  try {
+    const options = { new: true };
+    const qn = await Question.findByIdAndUpdate(id, qnInfo, options).populate('article_ref');
+    return qn;
+  } catch (error) {
+    throw new Error(`updating question error: ${error}`);
+  }
+};
 
