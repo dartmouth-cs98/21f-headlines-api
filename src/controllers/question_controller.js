@@ -40,6 +40,22 @@ export const getNumQuestions = async (num) => {
   return res;
 };
 
+// Create a function that given the id of a question, adds or substracts to a like
+export const rateQuestion = async (id, isLike, change) => {
+  let changeData = {};
+  if (isLike) {
+    changeData = { $inc: { likes: parseInt(change, 10) } };
+  } else {
+    changeData = { $inc: { dislikes: parseInt(change, 10) } };
+  }
+  try {
+    console.log(await Question.findByIdAndUpdate(id, changeData));
+  } catch (error) {
+    console.log(error);
+    throw new Error(`Problem rating question: ${error}`);
+  }
+};
+
 export const getQuestion = async (id) => {
   try {
     const qn = await Question.findById(id).populate('article_ref');
