@@ -147,11 +147,39 @@ router.put('/rateQuestion/:questionId', async (req, res) => {
   try {
     const data = req.body;
     console.log(data);
-    await Questions.rateQuestion(req.params.questionId, data.isLike, data.change);
+    await Questions.rateQuestion(req.params.questionId, data.change);
     res.json({ success: 'true' });
   } catch (error) {
     res.status(420).send({ error: error.toString() });
   }
 });
 
+router.delete('/deleteQuestions/:lowScore', async (req, res) => {
+  try {
+    Questions.deleteBadQuestions(req.params.lowScore);
+    res.json({ success: 'true' });
+  } catch (error) {
+    res.status(420).send({ error: error.toString() });
+  }
+});
+// Endpoint for simply checking if a username is taken or not
+router.get('/checkUsername/:attemptedUsername', async (req, res) => {
+  try {
+    const isAllowed = await Users.checkUsername(req.params.attemptedUsername);
+    res.json({ isAllowed });
+  } catch (error) {
+    res.status(420).send({ error: error.toString() });
+  }
+});
+// Endpoint for updating a user's profile name.
+router.put('/setUsername/:userId', async (req, res) => {
+  try {
+    const data = req.body;
+    const didChange = await Users.chooseUsername(data.attemptedUsername, req.params.userId);
+    // Return back whether or not the username was actually changed.
+    res.json({ didChange });
+  } catch (error) {
+    res.status(420).send({ error: error.toString() });
+  }
+});
 export default router;

@@ -3,6 +3,7 @@ import bcryptjs from 'bcryptjs';
 
 const UserSchema = new Schema({
   email: { type: String, unique: true, lowercase: true },
+  username: { type: String, unique: true, default: '' },
   password: { type: String },
   friends: { type: [{ type: Schema.Types.ObjectId, ref: 'User' }], default: [] },
   days_played: { type: [Date], default: [] },

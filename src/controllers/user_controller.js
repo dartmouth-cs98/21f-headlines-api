@@ -29,6 +29,25 @@ export const signup = async ({ email, password }) => {
   return tokenForUser(user);
 };
 
+// Only checks the if the username exists or not, doesn't actually update it. true if the username doesn't exist
+export const checkUsername = async ({ attemptedUsername }) => {
+  const exisitingUser = await User.findOne({ username: attemptedUsername });
+  if (exisitingUser) {
+    return false;
+  } else {
+    return true;
+  }
+};
+// Returns true if a username was able to be switched, false if it already existed
+export const chooseUsername = async ({ attemptedUsername, userId }) => {
+  // Set the username for this userId
+  try {
+    await User.findByIdAndUpdate(userId, { $set: { username: attemptedUsername } });
+    return true;
+  } catch (error) {
+    throw new Error(`choose Username: ${error}`);
+  }
+};
 // encodes a new token for a user object
 function tokenForUser(user) {
   const timestamp = new Date().getTime();
