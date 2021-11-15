@@ -41,13 +41,9 @@ export const getNumQuestions = async (num) => {
 };
 
 // Create a function that given the id of a question, adds or substracts to a like
-export const rateQuestion = async (id, isLike, change) => {
+export const rateQuestion = async (id, change) => {
   let changeData = {};
-  if (isLike) {
-    changeData = { $inc: { likes: parseInt(change, 10) } };
-  } else {
-    changeData = { $inc: { dislikes: parseInt(change, 10) } };
-  }
+  changeData = { $inc: { likes: parseInt(change, 10) } };
   try {
     console.log(await Question.findByIdAndUpdate(id, changeData));
   } catch (error) {
@@ -62,6 +58,15 @@ export const getQuestion = async (id) => {
     return qn;
   } catch (error) {
     throw new Error(`get question error: ${error}`);
+  }
+};
+
+// Call this to clean the mongoDB by deleting all questions lower than a certain rating
+export const deleteBadQuestions = async (lowScore) => {
+  try {
+    Question.deleteMany({ likes: { $lt: parseInt(lowScore, 10) } });
+  } catch (error) {
+    throw new Error(`delete question error: ${error}`);
   }
 };
 
