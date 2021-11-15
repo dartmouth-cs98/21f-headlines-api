@@ -64,7 +64,7 @@ export const getQuestion = async (id) => {
 // Call this to clean the mongoDB by deleting all questions lower than a certain rating
 export const deleteBadQuestions = async (lowScore) => {
   try {
-    Question.deleteMany({ likes: { $lt: lowScore } });
+    Question.deleteMany({ likes: { $lt: parseInt(lowScore, 10) } });
   } catch (error) {
     throw new Error(`delete question error: ${error}`);
   }
