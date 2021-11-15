@@ -156,7 +156,7 @@ router.put('/rateQuestion/:questionId', async (req, res) => {
 
 router.delete('/deleteQuestions/:lowScore', async (req, res) => {
   try {
-    Questions.deleteBadQuestions(req.params.lowScore);
+    await Questions.deleteBadQuestions(req.params.lowScore);
     res.json({ success: 'true' });
   } catch (error) {
     res.status(420).send({ error: error.toString() });
