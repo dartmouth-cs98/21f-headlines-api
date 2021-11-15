@@ -1,9 +1,17 @@
 import Article from '../models/article_model';
 
+const sort = (list) => {
+  const temp = list.sort((a, b) => {
+    if (a.createdAt > b.createdAt) { return -1; }
+    if (a.createdAt < b.createdAt) { return 1; } else { return 0; }
+  });
+  return temp;
+};
+
 export const getArticles = async () => {
   try {
     const articles = await Article.find({}).populate('questions');
-    return articles;
+    return sort(articles);
   } catch (error) {
     throw new Error(`get articles error: ${error}`);
   }
