@@ -2,7 +2,10 @@ import { Router } from 'express';
 import * as Articles from './controllers/article_controller';
 import * as Questions from './controllers/question_controller';
 import * as Users from './controllers/user_controller';
+import * as DailyChallenge from './controllers/daily_challenges_controller';
+import * as UserChallenge from './controllers/user_challenges_controller';
 import { requireSignin } from './services/passport';
+import UserChallengeModel from './models/user_challenges_model';
 
 const router = Router();
 
@@ -19,7 +22,8 @@ router.route('/articles')
       res.status(422).send({ error: error.toString() });
     }
   });
-router.route('/article/:articleID')
+
+  router.route('/article/:articleID')
   .get(async (req, res) => {
     try {
       const article = await Articles.getArticle({ _id: req.params.articleID });
@@ -162,6 +166,7 @@ router.delete('/deleteQuestions/:lowScore', async (req, res) => {
     res.status(420).send({ error: error.toString() });
   }
 });
+
 // Endpoint for simply checking if a username is taken or not
 router.get('/checkUsername/:attemptedUsername', async (req, res) => {
   try {
@@ -171,6 +176,7 @@ router.get('/checkUsername/:attemptedUsername', async (req, res) => {
     res.status(420).send({ error: error.toString() });
   }
 });
+
 // Endpoint for updating a user's profile name.
 router.put('/setUsername/:userId', async (req, res) => {
   try {
@@ -182,4 +188,75 @@ router.put('/setUsername/:userId', async (req, res) => {
     res.status(420).send({ error: error.toString() });
   }
 });
+
+router.route('/dailyChallenges')
+  .post(async (req, res) => {
+    try {
+      const challenge_id = await DailyChallenge.createDailyChallenge(req.body.challenge);
+      res.json(challenge_id);
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  })
+  .get(async (req, res) => {
+    try {
+      const challenge = await DailyChallenge.getDailyChallenge();
+      res.json(challenge);
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+
+
+  router.route('/userChallenges')
+  .post(async (req, res) => {
+    try {
+      const challenge_id = await UserChallenge.createUserChallenge(req.body.challenge);
+      res.json(challenge_id);
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  })
+  // gets the top ten performers on the daily challenge today (if they exist)
+  .get(async (req, res) => {
+    try {
+      console.log('test');
+      const challenges = await UserChallenge.getTopUserChallenges();
+      res.json(challenges);
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+  
+  // returns a users last 7 days of performance in list
+  router.route('/userChallenges/:userID')
+  .get(async (req, res) => {
+    try {
+      console.log('test');
+      const challenge = await UserChallenge.getUserChallenges(req.params.userID, 7);
+      res.json(challenge);
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+
+  router.route('/userChallenges/friends/:userID')
+  .get(async (req, res) => {
+    try {
+      const user = await Users.getUser(req.params.userID);
+      console.log(user);
+      const friends = user.friends;
+      const challenges = [];
+      for (let i = 0; i < friends.length; i++) {
+        const user_challenge = await UserChallenge.getUserChallenges(friends[i]);
+        challenges.push(user_challenge)
+      }
+      res.json(challenges);
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+
+
+
 export default router;

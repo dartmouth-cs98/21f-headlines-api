@@ -8,6 +8,15 @@ export const signin = (user) => {
   return tokenForUser(user);
 };
 
+export const getUser = async (id) => {
+  try {
+    const user = await User.findOne({_id: id});
+    return user;
+  } catch (error) {
+    throw new Error(`could not find user: ${user}`);
+  };
+}
+
 export const signup = async ({ email, password }) => {
   if (!email || !password) {
     throw new Error('You must provide email and password');
