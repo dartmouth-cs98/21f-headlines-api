@@ -9,7 +9,6 @@ import apiRouter from './router';
 // // DB Setup
 const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost/headlines';
 
-
 mongoose.connect(mongoURI).then(() => {
   console.log('connected to database:', mongoURI);
 }).catch((err) => {

@@ -5,7 +5,6 @@ import * as Users from './controllers/user_controller';
 import * as DailyChallenge from './controllers/daily_challenges_controller';
 import * as UserChallenge from './controllers/user_challenges_controller';
 import { requireSignin } from './services/passport';
-import UserChallengeModel from './models/user_challenges_model';
 
 const router = Router();
 
@@ -23,7 +22,7 @@ router.route('/articles')
     }
   });
 
-  router.route('/article/:articleID')
+router.route('/article/:articleID')
   .get(async (req, res) => {
     try {
       const article = await Articles.getArticle({ _id: req.params.articleID });
@@ -192,8 +191,8 @@ router.put('/setUsername/:userId', async (req, res) => {
 router.route('/dailyChallenges')
   .post(async (req, res) => {
     try {
-      const challenge_id = await DailyChallenge.createDailyChallenge(req.body.challenge);
-      res.json(challenge_id);
+      const challengeId = await DailyChallenge.createDailyChallenge(req.body.challenge);
+      res.json(challengeId);
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
@@ -207,12 +206,11 @@ router.route('/dailyChallenges')
     }
   });
 
-
-  router.route('/userChallenges')
+router.route('/userChallenges')
   .post(async (req, res) => {
     try {
-      const challenge_id = await UserChallenge.createUserChallenge(req.body.challenge);
-      res.json(challenge_id);
+      const challengeId = await UserChallenge.createUserChallenge(req.body.challenge);
+      res.json(challengeId);
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
@@ -227,9 +225,9 @@ router.route('/dailyChallenges')
       res.status(422).send({ error: error.toString() });
     }
   });
-  
-  // returns a users last 7 days of performance in list
-  router.route('/userChallenges/:userID')
+
+// returns a users last 7 days of performance in list
+router.route('/userChallenges/:userID')
   .get(async (req, res) => {
     try {
       console.log('test');
@@ -240,23 +238,22 @@ router.route('/dailyChallenges')
     }
   });
 
-  router.route('/userChallenges/friends/:userID')
+router.route('/userChallenges/friends/:userID')
   .get(async (req, res) => {
     try {
       const user = await Users.getUser(req.params.userID);
       console.log(user);
-      const friends = user.friends;
+      const friends = { ...user.friends };
       const challenges = [];
-      for (let i = 0; i < friends.length; i++) {
-        const user_challenge = await UserChallenge.getUserChallenges(friends[i]);
-        challenges.push(user_challenge)
+      for (let i = 0; i < friends.length; i += 1) {
+        /* eslint-disable no-await-in-loop */
+        const userChallenge = await UserChallenge.getUserChallenges(friends[i]);
+        challenges.push(userChallenge);
       }
       res.json(challenges);
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
   });
-
-
 
 export default router;

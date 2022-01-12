@@ -10,12 +10,12 @@ export const signin = (user) => {
 
 export const getUser = async (id) => {
   try {
-    const user = await User.findOne({_id: id});
+    const user = await User.findOne({ _id: id });
     return user;
   } catch (error) {
-    throw new Error(`could not find user: ${user}`);
-  };
-}
+    throw new Error(`could not find user: ${error}`);
+  }
+};
 
 export const signup = async ({ email, password }) => {
   if (!email || !password) {
