@@ -2,6 +2,8 @@ import { Router } from 'express';
 import * as Articles from './controllers/article_controller';
 import * as Questions from './controllers/question_controller';
 import * as Users from './controllers/user_controller';
+import * as DailyChallenge from './controllers/daily_challenges_controller';
+import * as UserChallenge from './controllers/user_challenges_controller';
 import { requireSignin } from './services/passport';
 
 const router = Router();
@@ -132,5 +134,116 @@ router.post('/signup', async (req, res) => {
     res.status(422).send({ error: error.toString() });
   }
 });
+
+// Endpoint for rating a question
+router.put('/rateQuestion/:questionId', async (req, res) => {
+  try {
+    const data = req.body;
+    console.log(data);
+    await Questions.rateQuestion(req.params.questionId, data.change);
+    res.json({ success: 'true' });
+  } catch (error) {
+    res.status(420).send({ error: error.toString() });
+  }
+});
+
+router.delete('/deleteQuestions/:lowScore', async (req, res) => {
+  try {
+    await Questions.deleteBadQuestions(req.params.lowScore);
+    res.json({ success: 'true' });
+  } catch (error) {
+    res.status(420).send({ error: error.toString() });
+  }
+});
+
+// Endpoint for simply checking if a username is taken or not
+router.get('/checkUsername/:attemptedUsername', async (req, res) => {
+  try {
+    const isAllowed = await Users.checkUsername(req.params.attemptedUsername);
+    res.json({ isAllowed });
+  } catch (error) {
+    res.status(420).send({ error: error.toString() });
+  }
+});
+
+// Endpoint for updating a user's profile name.
+router.put('/setUsername/:userId', async (req, res) => {
+  try {
+    const data = req.body;
+    const didChange = await Users.chooseUsername(data.attemptedUsername, req.params.userId);
+    // Return back whether or not the username was actually changed.
+    res.json({ didChange });
+  } catch (error) {
+    res.status(420).send({ error: error.toString() });
+  }
+});
+
+router.route('/dailyChallenges')
+  .post(async (req, res) => {
+    try {
+      const challengeId = await DailyChallenge.createDailyChallenge(req.body.challenge);
+      res.json(challengeId);
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  })
+  .get(async (req, res) => {
+    try {
+      const challenge = await DailyChallenge.getDailyChallenge();
+      res.json(challenge);
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+
+router.route('/userChallenges')
+  .post(async (req, res) => {
+    try {
+      const challengeId = await UserChallenge.createUserChallenge(req.body.challenge);
+      res.json(challengeId);
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  })
+  // gets the top ten performers on the daily challenge today (if they exist)
+  .get(async (req, res) => {
+    try {
+      console.log('test');
+      const challenges = await UserChallenge.getTopUserChallenges();
+      res.json(challenges);
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+
+// returns a users last 7 days of performance in list
+router.route('/userChallenges/:userID')
+  .get(async (req, res) => {
+    try {
+      console.log('test');
+      const challenge = await UserChallenge.getUserChallenges(req.params.userID, 7);
+      res.json(challenge);
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+
+router.route('/userChallenges/friends/:userID')
+  .get(async (req, res) => {
+    try {
+      const user = await Users.getUser(req.params.userID);
+      console.log(user);
+      const friends = { ...user.friends };
+      const challenges = [];
+      for (let i = 0; i < friends.length; i += 1) {
+        /* eslint-disable no-await-in-loop */
+        const userChallenge = await UserChallenge.getUserChallenges(friends[i]);
+        challenges.push(userChallenge);
+      }
+      res.json(challenges);
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
 
 export default router;
