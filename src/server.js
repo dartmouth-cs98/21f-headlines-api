@@ -7,7 +7,8 @@ import mongoose from 'mongoose';
 import apiRouter from './router';
 
 // // DB Setup
-const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost/headlines';
+// const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost/headlines';
+const mongoURI = 'mongodb+srv://headlines_user:e202R1PXHho11bIU@cluster0.vapw9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
 
 // for testing
 // const mongoURI = 'mongodb+srv://headlines_user:e202R1PXHho11bIU@cluster0.vapw9.mongodb.net/test?retryWrites=true&w=majority';
@@ -17,6 +18,7 @@ mongoose.connect(mongoURI).then(() => {
 }).catch((err) => {
   console.log('error: could not connect to db:', err);
 });
+
 // initialize
 const app = express();
 

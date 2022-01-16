@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import DailyChallenge from '../models/daily_challenges_model';
 
 export const createDailyChallenge = async (challenge) => {
@@ -16,11 +17,10 @@ export const createDailyChallenge = async (challenge) => {
 export const getDailyChallenge = async () => {
   try {
     // used this: https://stackoverflow.com/questions/29327222/mongodb-find-created-results-by-date-today/29327353
-    const start = new Date();
-    start.setHours(0, 0, 0, 0);
+    const start = DateTime.now().setZone('America/New_York').startOf('day').toISO();
+    console.log(start);
 
-    const end = new Date();
-    end.setHours(23, 59, 59, 999);
+    const end = DateTime.now().setZone('America/New_York').endOf('day').toISO();
 
     const challenge = await DailyChallenge.findOne({ date: { $gte: start, $lt: end } }).populate('questions');
     return challenge;
