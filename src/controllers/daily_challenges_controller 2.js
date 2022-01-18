@@ -1,6 +1,5 @@
-import DailyChallenge from '../models/daily_challenges_model';
-import * as Questions from './question_controller';
 import { DateTime } from 'luxon';
+import DailyChallenge from '../models/daily_challenges_model';
 
 export const createDailyChallenge = async (challenge) => {
   const dailyChallenge = new DailyChallenge();
@@ -23,10 +22,6 @@ export const getDailyChallenge = async () => {
 
     const end = DateTime.now().setZone('America/New_York').endOf('day').toISO();
 
-    console.log(start);
-    console.log(end);
-
-    const questions = [];
     const challenge = await DailyChallenge.findOne({ date: { $gte: start, $lt: end } }).populate('questions');
     return challenge;
   } catch (error) {

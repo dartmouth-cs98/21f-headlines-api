@@ -178,7 +178,7 @@ router.put('/setUsername/:userId', async (req, res) => {
   }
 });
 
-router.route('/dailyChallenges')
+router.route('/dailyChallenges/?date=date')
   .post(async (req, res) => {
     try {
       const challengeId = await DailyChallenge.createDailyChallenge(req.body.challenge);
@@ -189,6 +189,7 @@ router.route('/dailyChallenges')
   })
   .get(async (req, res) => {
     try {
+      console.log(req.params.date)
       const challenge = await DailyChallenge.getDailyChallenge();
       res.json(challenge);
     } catch (error) {
