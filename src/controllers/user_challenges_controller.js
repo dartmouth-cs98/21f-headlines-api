@@ -1,4 +1,6 @@
 import UserChallenge from '../models/user_challenges_model';
+import * as User from './user_controller';
+import { getStartEndDate } from '../helpers/helpers';
 
 export const createUserChallenge = async (challenge) => {
   const userChallenge = new UserChallenge();
@@ -15,40 +17,46 @@ export const createUserChallenge = async (challenge) => {
   }
 };
 
-export const getTopUserChallenges = async (num = 10) => {
+// Returns global top user challenges from a certain date
+export const getTopUserChallenges = async (date, num = 10) => {
   try {
-    const start = new Date();
-    start.setHours(0, 0, 0, 0);
-
-    const end = new Date();
-    end.setHours(23, 59, 59, 999);
-
+    const { start, end } = getStartEndDate(date);
     // used this: https://stackoverflow.com/questions/61178772/mongodb-how-to-find-the-10-largest-values-in-a-collection
-    const challenge = await UserChallenge.find({ date: { $gte: start, $lt: end } }).sort({ number_correct: 1, seconds_taken: -1 }).limit(num);
+    const challenge = await UserChallenge.find({ date: { $gte: start, $lt: end } }).sort({ number_correct: -1, seconds_taken: 1 }).limit(num);
     return challenge;
   } catch (error) {
     throw new Error(`get daily challenge error: ${error}`);
   }
 };
 
-export const getUserChallenges = async (id, daysBack = 1) => {
+// Returns a list of a specific user's challenges
+export const getUserChallenges = async (id, timeFrame = 7) => {
   try {
-    let start = new Date();
-    start.setHours(0, 0, 0, 0);
-    start -= (daysBack - 1) * 60 * 60 * 24 * 1000;
-
-    console.log(`days back: ${daysBack}`);
-
-    const end = new Date();
-    end.setHours(23, 59, 59, 999);
+    const { start, end } = getStartEndDate(null, timeFrame, 0);
+    console.log(start);
+    console.log(end);
 
     // used this: https://stackoverflow.com/questions/61178772/mongodb-how-to-find-the-10-largest-values-in-a-collection
-    const challenge = await UserChallenge.find({ user_id: id, date: { $gte: start, $lt: end } }).sort({ date: 1 }).populate('user');
-    if (daysBack === 1) {
-      return challenge[0];
-    }
-    return challenge;
+    const challenges = await UserChallenge.find({ user_id: id, date: { $gte: start, $lt: end } }).sort({ date: 1 }).populate('user');
+    return challenges;
   } catch (error) {
     throw new Error(`get daily challenge error: ${error}`);
+  }
+};
+
+// Returns a list of a user's friends challenges from a certain date
+export const getUserFriendChallenges = async (id, date) => {
+  try {
+    const { start, end } = getStartEndDate(date, 1, 0);
+
+    // used this: https://stackoverflow.com/questions/15102532/mongo-find-through-list-of-ids
+    const user = await User.getUser(id);
+    console.log(user);
+    const friendIds = user.friends;
+    console.log(friendIds);
+    const friendsToday = await UserChallenge.find({ user: { $in: friendIds }, date: { $gte: start, $lt: end } }).sort({ number_correct: -1, seconds_taken: 1 });
+    return friendsToday;
+  } catch (error) {
+    throw new Error(`get user friend challenges error: ${error}`);
   }
 };
