@@ -1,6 +1,5 @@
 import DailyChallenge from '../models/daily_challenges_model';
-import * as Questions from './question_controller';
-import { DateTime } from 'luxon';
+import { getStartEndDate } from '../helpers/helpers';
 
 export const createDailyChallenge = async (challenge) => {
   const dailyChallenge = new DailyChallenge();
@@ -15,18 +14,10 @@ export const createDailyChallenge = async (challenge) => {
   }
 };
 
-export const getDailyChallenge = async () => {
+export const getDailyChallenge = async (date) => {
   try {
     // used this: https://stackoverflow.com/questions/29327222/mongodb-find-created-results-by-date-today/29327353
-    const start = DateTime.now().setZone('America/New_York').startOf('day').toISO();
-    console.log(start);
-
-    const end = DateTime.now().setZone('America/New_York').endOf('day').toISO();
-
-    console.log(start);
-    console.log(end);
-
-    const questions = [];
+    const { start, end } = getStartEndDate(date);
     const challenge = await DailyChallenge.findOne({ date: { $gte: start, $lt: end } }).populate('questions');
     return challenge;
   } catch (error) {

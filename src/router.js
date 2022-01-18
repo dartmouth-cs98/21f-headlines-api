@@ -178,7 +178,7 @@ router.put('/setUsername/:userId', async (req, res) => {
   }
 });
 
-router.route('/dailyChallenges/?date=date')
+router.route('/dailyChallenges')
   .post(async (req, res) => {
     try {
       const challengeId = await DailyChallenge.createDailyChallenge(req.body.challenge);
@@ -189,8 +189,7 @@ router.route('/dailyChallenges/?date=date')
   })
   .get(async (req, res) => {
     try {
-      console.log(req.params.date)
-      const challenge = await DailyChallenge.getDailyChallenge();
+      const challenge = await DailyChallenge.getDailyChallenge(req.query.date);
       res.json(challenge);
     } catch (error) {
       res.status(422).send({ error: error.toString() });
@@ -209,8 +208,7 @@ router.route('/userChallenges')
   // gets the top ten performers on the daily challenge today (if they exist)
   .get(async (req, res) => {
     try {
-      console.log('test');
-      const challenges = await UserChallenge.getTopUserChallenges();
+      const challenges = await UserChallenge.getTopUserChallenges(req.query.date);
       res.json(challenges);
     } catch (error) {
       res.status(422).send({ error: error.toString() });
@@ -221,7 +219,7 @@ router.route('/userChallenges')
 router.route('/userChallenges/:userID')
   .get(async (req, res) => {
     try {
-      console.log('test');
+      // the 7 means we are getting the last week
       const challenge = await UserChallenge.getUserChallenges(req.params.userID, 7);
       res.json(challenge);
     } catch (error) {
@@ -232,16 +230,8 @@ router.route('/userChallenges/:userID')
 router.route('/userChallenges/friends/:userID')
   .get(async (req, res) => {
     try {
-      const user = await Users.getUser(req.params.userID);
-      console.log(user);
-      const friends = { ...user.friends };
-      const challenges = [];
-      for (let i = 0; i < friends.length; i += 1) {
-        /* eslint-disable no-await-in-loop */
-        const userChallenge = await UserChallenge.getUserChallenges(friends[i]);
-        challenges.push(userChallenge);
-      }
-      res.json(challenges);
+      const friendChallenges = await UserChallenge.getUserFriendChallenges(req.params.userID, req.query.date);
+      res.json(friendChallenges);
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
