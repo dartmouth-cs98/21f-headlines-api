@@ -53,7 +53,6 @@ export const getUserFriendChallenges = async (id, date) => {
     const user = await User.getUser(id);
     console.log(user);
     const followingIds = user.following;
-    console.log(friendIds);
     const friendsToday = await UserChallenge.find({ user: { $in: followingIds }, date: { $gte: start, $lt: end } }).sort({ number_correct: -1, seconds_taken: 1 }).populate('user', 'email');
     return friendsToday;
   } catch (error) {
