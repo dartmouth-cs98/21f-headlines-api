@@ -17,6 +17,17 @@ export const getUser = async (id) => {
   }
 };
 
+export const getUsers = async (searchTerm) => {
+  try {
+    // option i is to ignore case sensitivity 
+    const users = await User.find( { email: { $regex: `^${searchTerm}`, $options: 'i' } } );
+    console.log(users);
+    return users;
+  } catch (error) {
+    throw new Error(`could not find users: ${error}`);
+  }
+};
+
 export const signup = async ({ email, password }) => {
   if (!email || !password) {
     throw new Error('You must provide email and password');

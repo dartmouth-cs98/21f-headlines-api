@@ -237,4 +237,14 @@ router.route('/userChallenges/friends/:userID')
     }
   });
 
+router.route('/users')
+  .get(async (req, res) => {
+    try {
+      const users = await Users.getUsers(req.query.term);
+      res.json(users);
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+
 export default router;
