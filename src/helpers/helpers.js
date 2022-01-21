@@ -13,6 +13,9 @@ export const getStartEndDate = (date, timeFrame = 1, daysBack = 0) => {
       .toISO();
     return { start, end };
   } else {
+    console.log(DateTime.fromFormat(date, 'y-M-d').toISO());
+    console.log(DateTime.fromFormat(date, 'y-M-d').setZone('America/New_York').toISO());
+    console.log(DateTime.fromFormat(date, 'y-M-d').setZone('America/New_York').startOf('day').toISO());
     const start = DateTime.fromFormat(date, 'y-M-d').setZone('America/New_York').startOf('day').minus({ days: timeFrame - 1 + daysBack })
       .toISO();
     const end = DateTime.fromFormat(date, 'y-M-d').setZone('America/New_York').endOf('day').minus({ days: daysBack })
