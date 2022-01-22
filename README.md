@@ -11,6 +11,7 @@ Headlines is a mobile app that is a trivia game about current events. Users can 
 ## Usage
 
 ### A Note on Dates
+* Tl;dr: you must pass a date in ISO form from the frontend
 * Mongo stores dates in UTC and Heroku servers are based in UTC 
 * We would like the app to operate on Eastern time (that is, the challenge resets each day at midnight eastern)
 * To stay consistent: 
