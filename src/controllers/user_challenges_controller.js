@@ -36,8 +36,6 @@ export const getTopUserChallenges = async (date, num = 10) => {
 export const getUserChallenges = async (id, timeFrame = 7) => {
   try {
     const { start, end } = getStartEndDate(null, timeFrame, 0);
-    console.log(start);
-    console.log(end);
 
     // used this: https://stackoverflow.com/questions/61178772/mongodb-how-to-find-the-10-largest-values-in-a-collection
     const challenges = await UserChallenge.find({ user: id, date: { $gte: start, $lt: end } }).sort({ date: 1 }).populate('user', 'email');

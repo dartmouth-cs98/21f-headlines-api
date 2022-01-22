@@ -10,6 +10,15 @@ Headlines is a mobile app that is a trivia game about current events. Users can 
 
 ## Usage
 
+### A Note on Dates
+* Mongo stores dates in UTC and Heroku servers are based in UTC 
+* We would like the app to operate on Eastern time (that is, the challenge resets each day at midnight eastern)
+* To stay consistent: 
+  * Anytime you must get current date on frontend: use `luxon.DateTime.now().toISO()`, and pass that to the backend, because this ensures that the date being passed already has a timezone associated with it (that is, the backend won't auto-set it to UTC)
+  * When posting a new daily challenge or user challenge: 
+    * daily challenge is in Mongo in UTC, will store at UTC time of 6 each day
+    * user challenges are also stored in UTC, just store with same date as daily challenge
+
 ### Daily Challenges
 
 - `POST /dailyChallenges` where `req.body.challenge` is the daily challenge to be added
