@@ -15,7 +15,7 @@ export const getStartEndDate = (date, timeFrame = 1, daysBack = 0) => {
     return { start, end };
   } else {
     // to stop weird behavior where + in ISO date is replaced with a space
-    const newDate = date.replace(' ', '+')
+    const newDate = date.replace(' ', '+');
     // this will always be the date that the ISO date is in, but IN EASTERN
     // so if ISO date is 3am UTC on the 22nd, then this range will be the 21st!
     // but this is what we want because then the frontend can just pass current UTC date,
