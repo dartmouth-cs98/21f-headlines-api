@@ -2,8 +2,9 @@ import mongoose, { Schema } from 'mongoose';
 import bcryptjs from 'bcryptjs';
 
 const UserSchema = new Schema({
-  email: { type: String, unique: true, lowercase: true },
+  email: { type: String, lowercase: true },
   username: { type: String, unique: true, default: '' },
+  phone: { type: String, unique: true, default: '' },
   password: { type: String },
   following: { type: [{ type: Schema.Types.ObjectId, ref: 'User' }], default: [] },
   followers: { type: [{ type: Schema.Types.ObjectId, ref: 'User' }], default: [] },
