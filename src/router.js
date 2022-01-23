@@ -4,7 +4,6 @@ import * as Questions from './controllers/question_controller';
 import * as Users from './controllers/user_controller';
 import * as DailyChallenge from './controllers/daily_challenges_controller';
 import * as UserChallenge from './controllers/user_challenges_controller';
-import { requireSignin } from './services/passport';
 
 const router = Router();
 
@@ -117,24 +116,6 @@ router.route('/questions/:questionID')
     }
   });
 
-router.post('/signin', requireSignin, async (req, res) => {
-  try {
-    const token = Users.signin(req.user);
-    res.json({ token, email: req.user.email });
-  } catch (error) {
-    res.status(422).send({ error: error.toString() });
-  }
-});
-
-router.post('/signup', async (req, res) => {
-  try {
-    const token = await Users.signup(req.body);
-    res.json({ token, email: req.body.email });
-  } catch (error) {
-    res.status(422).send({ error: error.toString() });
-  }
-});
-
 // Endpoint for rating a question
 router.put('/rateQuestion/:questionId', async (req, res) => {
   try {
@@ -232,6 +213,21 @@ router.route('/userChallenges/friends/:userID')
     try {
       const friendChallenges = await UserChallenge.getUserFriendChallenges(req.params.userID, req.query.date);
       res.json(friendChallenges);
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+
+// An example for simply testing if the user is authenticated or not.
+router.route('/authTest')
+  .get(async (req, res) => {
+    try {
+      const auth = req.currentUser;
+      if (auth) {
+        res.json({ hi: 'Nice you are authenticated! Awesome' });
+      } else {
+        res.status(401).send('Not authorized');
+      }
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
