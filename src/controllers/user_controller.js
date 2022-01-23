@@ -27,6 +27,15 @@ export const getUsers = async (searchTerm) => {
   }
 };
 
+export const getContacts = async (phoneNumbers) => {
+  try {
+    const users = await User.find({ phone: {$in: phoneNumbers }});
+    return users;
+  } catch (error) {
+    throw new Error(`could not find contacts users: ${error}`);
+  }
+};
+
 export const signup = async ({ email, password }) => {
   if (!email || !password) {
     throw new Error('You must provide email and password');
