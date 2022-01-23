@@ -247,4 +247,14 @@ router.route('/users')
     }
   });
 
+router.route('/users/:userID')
+  .put(async (req, res) => { // to update user info
+    try {
+      const user = await Users.updateUser(req.params.userID, req.body);
+      res.json(user);
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+
 export default router;
