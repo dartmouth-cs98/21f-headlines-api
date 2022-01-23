@@ -233,4 +233,35 @@ router.route('/authTest')
     }
   });
 
+router.route('/users')
+  .get(async (req, res) => {
+    try {
+      const users = await Users.getUsers(req.query.term);
+      res.json(users);
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+
+router.route('/users/contacts')
+// this is really a get, making it a post to include a body
+  .post(async (req, res) => {
+    try {
+      const users = await Users.getContacts(req.body.phoneNumbers);
+      res.json(users);
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+
+router.route('/users/:userID')
+  .put(async (req, res) => { // to update user info
+    try {
+      const user = await Users.updateUser(req.params.userID, req.body);
+      res.json(user);
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+
 export default router;

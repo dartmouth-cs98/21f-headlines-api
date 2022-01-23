@@ -17,6 +17,25 @@ export const getUser = async (id) => {
   }
 };
 
+export const getUsers = async (searchTerm) => {
+  try {
+    // option i is to ignore case sensitivity
+    const users = await User.find({ email: { $regex: `^${searchTerm}`, $options: 'i' } }).limit(10);
+    return users;
+  } catch (error) {
+    throw new Error(`could not find users: ${error}`);
+  }
+};
+
+export const getContacts = async (phoneNumbers) => {
+  try {
+    const users = await User.find({ phone: { $in: phoneNumbers } });
+    return users;
+  } catch (error) {
+    throw new Error(`could not find contacts users: ${error}`);
+  }
+};
+
 export const signup = async ({ email, password }) => {
   if (!email || !password) {
     throw new Error('You must provide email and password');
@@ -62,3 +81,24 @@ function tokenForUser(user) {
   const timestamp = new Date().getTime();
   return jwt.encode({ sub: user.id, iat: timestamp }, process.env.AUTH_SECRET);
 }
+
+export const updateUser = async (id, fields) => {
+  try {
+    const options = { new: true };
+    if (fields.follow) { // to following someone
+      const update = { following: { $each: [fields.follow] } };
+      const user = await User.findByIdAndUpdate(id, { $addToSet: update }, options);
+      return user;
+    } else if (fields.followed) { // someone is following us
+      const update = { followers: { $each: [fields.followed] } };
+      const user = await User.findByIdAndUpdate(id, { $addToSet: update }, options);
+      return user;
+    } else { // else we are updating any other fields
+      const user = await User.findByIdAndUpdate(id, fields, options);
+      return user;
+    }
+  } catch (error) {
+    console.log(error);
+    throw new Error(`update user error: ${error}`);
+  }
+};

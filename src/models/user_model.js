@@ -2,10 +2,12 @@ import mongoose, { Schema } from 'mongoose';
 import bcryptjs from 'bcryptjs';
 
 const UserSchema = new Schema({
-  email: { type: String, unique: true, lowercase: true },
+  email: { type: String, lowercase: true },
   username: { type: String, unique: true, default: '' },
+  phone: { type: String, unique: true, default: '' },
   password: { type: String },
-  friends: { type: [{ type: Schema.Types.ObjectId, ref: 'User' }], default: [] },
+  following: { type: [{ type: Schema.Types.ObjectId, ref: 'User' }], default: [] },
+  followers: { type: [{ type: Schema.Types.ObjectId, ref: 'User' }], default: [] },
   days_played: { type: [Date], default: [] },
   questions_answered_by_category: { type: Map, of: Number, default: {} },
   correct_answers_by_category: { type: Map, of: Number, default: {} },
