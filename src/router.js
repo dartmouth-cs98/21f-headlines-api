@@ -247,6 +247,17 @@ router.route('/users')
     }
   });
 
+router.route('/users/contacts')
+// this is really a get, making it a post to include a body
+  .post(async (req, res) => {
+    try {
+      const users = await Users.getContacts(req.body.phoneNumbers);
+      res.json(users);
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+
 router.route('/users/:userID')
   .put(async (req, res) => { // to update user info
     try {
