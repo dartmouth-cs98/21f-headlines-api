@@ -29,7 +29,7 @@ export const getUsers = async (searchTerm) => {
 
 export const getContacts = async (phoneNumbers) => {
   try {
-    const users = await User.find({ phone: {$in: phoneNumbers }});
+    const users = await User.find({ phone: { $in: phoneNumbers } });
     return users;
   } catch (error) {
     throw new Error(`could not find contacts users: ${error}`);
