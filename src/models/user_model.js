@@ -13,6 +13,7 @@ const UserSchema = new Schema({
   correct_answers_by_category: { type: Map, of: Number, default: {} },
   questions_answered: { type: [{ type: Schema.Types.ObjectId, ref: 'Question' }], default: [] },
   user_score: { type: Number, default: 0 },
+  role: String,
 },
 {
   toObject: { virtuals: true },

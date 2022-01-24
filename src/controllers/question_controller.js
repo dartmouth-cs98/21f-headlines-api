@@ -40,6 +40,11 @@ export const getNumQuestions = async (num) => {
   return res;
 };
 
+export const getQuestionsToCheck = async (num, filters) => {
+  const res = await Question.find(filters).limit(num);
+  return res;
+}
+
 // Create a function that given the id of a question, adds or substracts to a like
 export const rateQuestion = async (id, change) => {
   let changeData = {};
@@ -70,10 +75,10 @@ export const deleteBadQuestions = async (lowScore) => {
   }
 };
 
-export const updateQuestion = async (id, qnInfo) => {
+export const updateQuestion = async (id, question) => {
   try {
     const options = { new: true };
-    const qn = await Question.findByIdAndUpdate(id, qnInfo, options).populate('article_ref');
+    const qn = await Question.findByIdAndUpdate(id, question, options).populate('article_ref');
     return qn;
   } catch (error) {
     throw new Error(`updating question error: ${error}`);

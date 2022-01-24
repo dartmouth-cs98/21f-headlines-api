@@ -98,24 +98,26 @@ router.route('/questions')
   });
 
 router.route('/questions/:questionID')
-// this is to report a question
-// req.body needs to be a dict with a key "report",
-// whose value is a string with reporting messages
-  .post(async (req, res) => {
+// this is to update a question
+  .put(async (req, res) => {
     try {
-      const qn = await Questions.getQuestion(req.params.questionID);
-      let { report } = qn;
-      if (report) {
-        report.push(req.body.report);
-      } else {
-        report = [req.body.report];
-      }
-      const updatedQn = await Questions.updateQuestion(qn.id, { report });
-      res.json({ updatedQn });
+      const question = await Questions.updateQuestion(req.params.questionID, req.body.question );
+      res.json(question);
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
   });
+
+router.route('/adminQuestions')
+  .get(async (req, res) => {
+    try {
+      const question = await Questions.getQuestionsToCheck(req.query.num, { 'approved_status': req.query.approved_status, 'in_daily_quiz': req.query.in_daily_quiz });
+      return question;
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+
 
 router.post('/signin', requireSignin, async (req, res) => {
   try {
@@ -190,6 +192,16 @@ router.route('/dailyChallenges')
   .get(async (req, res) => {
     try {
       const challenge = await DailyChallenge.getDailyChallenge(req.query.date);
+      res.json(challenge);
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+
+router.route('/dailyChallenges/:id/questions')
+  .put(async (req, res) => {
+    try {
+      const challenge = await DailyChallenge.updateDailyChallenge(req.params.id, req.body.questionID);
       res.json(challenge);
     } catch (error) {
       res.status(422).send({ error: error.toString() });

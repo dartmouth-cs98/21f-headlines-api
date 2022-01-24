@@ -18,11 +18,19 @@ export const getDailyChallenge = async (date) => {
   try {
     // used this: https://stackoverflow.com/questions/29327222/mongodb-find-created-results-by-date-today/29327353
     const { start, end } = getStartEndDate(date);
-    console.log(start);
-    console.log(end);
     const challenge = await DailyChallenge.findOne({ date: { $gte: start, $lt: end } }).populate('questions');
     return challenge;
   } catch (error) {
     throw new Error(`get daily challenge error: ${error}`);
+  }
+};
+
+export const updateDailyChallenge = async (challengeId, questionId) => {
+  try {
+    // used this: https://stackoverflow.com/questions/15621970/pushing-object-into-array-schema-in-mongoose
+    const newChallenge = await DailyChallenge.findByIdAndUpdate(challengeId, {$push: {"questions": questionId }}, {safe: true, upsert: true, new : true});
+    return newChallenge;
+  } catch (error) {
+    throw new Error(`update daily challenge error: ${error}`);
   }
 };
