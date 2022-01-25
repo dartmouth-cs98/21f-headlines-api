@@ -25,9 +25,10 @@ export const getDailyChallenge = async (date) => {
   }
 };
 
-export const updateDailyChallenge = async (challengeId, questionId) => {
+export const addQuestionToDailyChallenge = async (challengeId, questionId) => {
   try {
     // used this: https://stackoverflow.com/questions/15621970/pushing-object-into-array-schema-in-mongoose
+    console.log(questionId);
     const newChallenge = await DailyChallenge.findByIdAndUpdate(challengeId, {$push: {"questions": questionId }}, {safe: true, upsert: true, new : true});
     return newChallenge;
   } catch (error) {

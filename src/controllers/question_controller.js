@@ -40,8 +40,15 @@ export const getNumQuestions = async (num) => {
   return res;
 };
 
-export const getQuestionsToCheck = async (num, filters) => {
-  const res = await Question.find(filters).limit(num);
+export const getQuestionsToCheck = async (filters, num = 10) => {
+  const newFilters = {};
+  newFilters.approved_status =  filters.approved_status;
+
+  if (filters.in_daily_quiz) {
+    newFilters.in_daily_quiz = filters.in_daily_quiz;
+  };
+
+  const res = await Question.find(newFilters).limit(num);
   return res;
 }
 

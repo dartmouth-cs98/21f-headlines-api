@@ -8,8 +8,8 @@ const QuestionSchema = new Schema({
   likes: Number,
   dislikes: Number,
   question_source: String,
-  approved_status: String,
-  in_daily_quiz: { type: Schema.Types.ObjectId, ref: 'DailyChallenge' },
+  approved_status: { type: String, default: 'undetermined' },
+  in_daily_quiz: { type: Schema.Types.ObjectId, ref: 'DailyChallenge', default: null },
   report: [String],
 },
 {
