@@ -81,7 +81,7 @@ router.route('/questions/:questionID')
 // this is to update a question
   .put(async (req, res) => {
     try {
-      const question = await Questions.updateQuestion(req.params.questionID, req.body.question );
+      const question = await Questions.updateQuestion(req.params.questionID, req.body.question);
       res.json(question);
     } catch (error) {
       res.status(422).send({ error: error.toString() });
@@ -97,7 +97,6 @@ router.route('/adminQuestions')
       res.status(422).send({ error: error.toString() });
     }
   });
-
 
 router.post('/signin', requireSignin, async (req, res) => {
   try {
@@ -280,6 +279,5 @@ router.put('/rateQuestion/:questionId', async (req, res) => {
     res.status(420).send({ error: error.toString() });
   }
 });
-  
 
 export default router;

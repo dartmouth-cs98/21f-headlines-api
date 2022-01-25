@@ -42,15 +42,15 @@ export const getNumQuestions = async (num) => {
 
 export const getQuestionsToCheck = async (filters, num = 10) => {
   const newFilters = {};
-  newFilters.approved_status =  filters.approved_status;
+  newFilters.approved_status = filters.approved_status;
 
   if (filters.in_daily_quiz) {
     newFilters.in_daily_quiz = filters.in_daily_quiz;
-  };
+  }
 
   const res = await Question.find(newFilters).limit(num);
   return res;
-}
+};
 
 // Create a function that given the id of a question, adds or substracts to a like
 export const rateQuestion = async (id, change) => {
