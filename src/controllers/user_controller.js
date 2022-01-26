@@ -1,18 +1,24 @@
-import jwt from 'jwt-simple';
 import dotenv from 'dotenv';
 import User from '../models/user_model';
 
 dotenv.config({ silent: true });
 
-export const signin = (user) => {
-  return tokenForUser(user);
-};
-
-export const getUser = async (id) => {
+// Allow us to grab a user based on their mongo id or firebase id or username
+export const getUser = async (id, firebaseId, username) => {
   try {
-    const user = await User.findOne({ _id: id });
+    let user;
+    if (id) {
+      user = await User.findOne({ _id: id });
+    } else if (firebaseId) {
+      // eslint-disable-next-line object-shorthand
+      user = await User.findOne({ firebaseID: firebaseId });
+    } else {
+      user = await User.findOne({ username });
+    }
+
     return user;
   } catch (error) {
+    console.log('error here');
     throw new Error(`could not find user: ${error}`);
   }
 };
@@ -36,36 +42,6 @@ export const getContacts = async (phoneNumbers) => {
   }
 };
 
-export const signup = async ({ email, password }) => {
-  if (!email || !password) {
-    throw new Error('You must provide email and password');
-  }
-
-  // See if a user with the given email exists
-  const existingUser = await User.findOne({ email });
-  if (existingUser) {
-    // If a user with email does exist, return an error
-    throw new Error('Email is in use');
-  }
-
-  const user = new User({
-    email,
-    password,
-  });
-
-  await user.save();
-  return tokenForUser(user);
-};
-
-// Only checks the if the username exists or not, doesn't actually update it. true if the username doesn't exist
-export const checkUsername = async ({ attemptedUsername }) => {
-  const exisitingUser = await User.findOne({ username: attemptedUsername });
-  if (exisitingUser) {
-    return false;
-  } else {
-    return true;
-  }
-};
 // Returns true if a username was able to be switched, false if it already existed
 export const chooseUsername = async ({ attemptedUsername, userId }) => {
   // Set the username for this userId
@@ -76,11 +52,21 @@ export const chooseUsername = async ({ attemptedUsername, userId }) => {
     throw new Error(`choose Username: ${error}`);
   }
 };
-// encodes a new token for a user object
-function tokenForUser(user) {
-  const timestamp = new Date().getTime();
-  return jwt.encode({ sub: user.id, iat: timestamp }, process.env.AUTH_SECRET);
-}
+export const postUser = async (data) => {
+  const newUser = new User();
+  newUser.username = data.username;
+  newUser.fullName = data.fullName;
+  newUser.phone = data.phone;
+  newUser.unformattedPhone = data.unformattedPhone;
+  newUser.firebaseID = data.firebaseid;
+  console.log(newUser);
+  try {
+    const savedUser = await newUser.save();
+    return savedUser.id;
+  } catch (error) {
+    throw new Error(`unable to add new user to database: ${error}`);
+  }
+};
 
 export const updateUser = async (id, fields) => {
   try {

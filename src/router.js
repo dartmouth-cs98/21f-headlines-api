@@ -14,8 +14,12 @@ router.get('/api', (req, res) => {
 router.route('/articles')
   .get(async (req, res) => {
     try {
-      const articles = await Articles.getArticles();
-      res.json(articles);
+      if (req.currentUser) {
+        const articles = await Articles.getArticles();
+        res.json(articles);
+      } else {
+        res.status(401).send('Not authorized');
+      }
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
@@ -42,8 +46,12 @@ router.route('/articles')
 router.route('/articles/:articleID')
   .get(async (req, res) => {
     try {
-      const article = await Articles.getArticle({ _id: req.params.articleID });
-      res.json(article);
+      if (req.currentUser) {
+        const article = await Articles.getArticle({ _id: req.params.articleID });
+        res.json(article);
+      } else {
+        res.status(401).send('Not authorized');
+      }
     } catch (error) {
       res.status(500).json({ error });
     }
@@ -72,8 +80,12 @@ router.route('/learn')
 router.route('/questions')
   .get(async (req, res) => {
     try {
-      const questions = await Questions.getNumQuestions(req.query.num);
-      res.json({ questions });
+      if (req.currentUser) {
+        const questions = await Questions.getNumQuestions(req.query.num);
+        res.json({ questions });
+      } else {
+        res.status(401).send('Not authorized');
+      }
     } catch (error) {
       res.status(500).send({ error: error.toString() });
     }
@@ -137,28 +149,6 @@ router.delete('/deleteQuestions/:lowScore', async (req, res) => {
   }
 });
 
-// Endpoint for simply checking if a username is taken or not
-router.get('/checkUsername/:attemptedUsername', async (req, res) => {
-  try {
-    const isAllowed = await Users.checkUsername(req.params.attemptedUsername);
-    res.json({ isAllowed });
-  } catch (error) {
-    res.status(420).send({ error: error.toString() });
-  }
-});
-
-// Endpoint for updating a user's profile name.
-router.put('/setUsername/:userId', async (req, res) => {
-  try {
-    const data = req.body;
-    const didChange = await Users.chooseUsername(data.attemptedUsername, req.params.userId);
-    // Return back whether or not the username was actually changed.
-    res.json({ didChange });
-  } catch (error) {
-    res.status(420).send({ error: error.toString() });
-  }
-});
-
 router.route('/dailyChallenges')
   .post(async (req, res) => {
     try {
@@ -170,8 +160,12 @@ router.route('/dailyChallenges')
   })
   .get(async (req, res) => {
     try {
-      const challenge = await DailyChallenge.getDailyChallenge(req.query.date);
-      res.json(challenge);
+      if (req.currentUser) {
+        const challenge = await DailyChallenge.getDailyChallenge(req.query.date);
+        res.json(challenge);
+      } else {
+        res.status(401).send('Not authorized');
+      }
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
@@ -189,8 +183,12 @@ router.route('/userChallenges')
   // gets the top ten performers on the daily challenge today (if they exist)
   .get(async (req, res) => {
     try {
-      const challenges = await UserChallenge.getTopUserChallenges(req.query.date);
-      res.json(challenges);
+      if (req.currentUser) {
+        const challenges = await UserChallenge.getTopUserChallenges(req.query.date);
+        res.json(challenges);
+      } else {
+        res.status(401).send('Not authorized');
+      }
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
@@ -200,9 +198,14 @@ router.route('/userChallenges')
 router.route('/userChallenges/:userID')
   .get(async (req, res) => {
     try {
-      // the 7 means we are getting the last week
-      const challenge = await UserChallenge.getUserChallenges(req.params.userID, 7);
-      res.json(challenge);
+      const auth = req.currentUser;
+      if (auth) {
+        // the 7 means we are getting the last week
+        const challenge = await UserChallenge.getUserChallenges(req.params.userID, 7);
+        res.json(challenge);
+      } else {
+        res.status(401).send('Not authorized');
+      }
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
@@ -211,8 +214,13 @@ router.route('/userChallenges/:userID')
 router.route('/userChallenges/friends/:userID')
   .get(async (req, res) => {
     try {
-      const friendChallenges = await UserChallenge.getUserFriendChallenges(req.params.userID, req.query.date);
-      res.json(friendChallenges);
+      const auth = req.currentUser;
+      if (auth) {
+        const friendChallenges = await UserChallenge.getUserFriendChallenges(req.params.userID, req.query.date);
+        res.json(friendChallenges);
+      } else {
+        res.status(401).send('Not authorized');
+      }
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
@@ -233,6 +241,7 @@ router.route('/authTest')
     }
   });
 
+// Route for users. Can get a query result of users or post to users a new users
 router.route('/users')
   .get(async (req, res) => {
     try {
@@ -240,6 +249,16 @@ router.route('/users')
       res.json(users);
     } catch (error) {
       res.status(422).send({ error: error.toString() });
+    }
+  }).post(async (req, res) => {
+    try {
+      // console.log(req.body);
+      // call postUser to create a new user with the given information. They do not need to be authenticated for this
+      await Users.postUser(req.body);
+      res.json({ Success: true });
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+      console.log(error.toString());
     }
   });
 
@@ -253,15 +272,63 @@ router.route('/users/contacts')
       res.status(422).send({ error: error.toString() });
     }
   });
-
+// This route is for accessing a specific user in order to update their information
+// For get it can be either mongo id or firebase id
 router.route('/users/:userID')
   .put(async (req, res) => { // to update user info
     try {
-      const user = await Users.updateUser(req.params.userID, req.body);
-      res.json(user);
+      const auth = req.currentUser;
+      if (auth) {
+        const user = await Users.updateUser(req.params.userID, req.body);
+        res.json(user);
+      } else {
+        res.status(401).send('Not Authenticated');
+      }
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  }).get(async (req, res) => { // to get user info
+    try {
+      const auth = req.currentUser;
+      if (auth) {
+        const user = await Users.getUser(null, req.params.userID);
+        res.json(user);
+      } else {
+        res.status(401).send('Not Authenticated');
+      }
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
   });
 
+router.route('/users/exists/:userID')
+  .get(async (req, res) => { // to see if a user exists or not
+    try {
+      const user = await Users.getUser(null, req.params.userID);
+      if (user) {
+        res.json({ exists: true });
+      } else {
+        res.json({ exists: false });
+      }
+
+    // Get user throws error if user doesn't exists.
+    } catch (error) {
+      res.json({ exists: false });
+    }
+  });
+
+// Endpoint for simply checking if a username is taken or not, very, COUld be condensed into /exists endpoint
+router.get('/users/checkUsername/:attemptedUsername', async (req, res) => {
+  try {
+    const user = await Users.getUser(null, null, req.params.attemptedUsername);
+    if (user) {
+      res.json({ taken: true });
+    } else {
+      res.json({ taken: false });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(420).send({ error: error.toString() });
+  }
+});
 export default router;
