@@ -29,7 +29,8 @@ export const getUsers = async (searchTerm) => {
 
 export const getContacts = async (phoneNumbers) => {
   try {
-    const users = await User.find({ phone: { $in: phoneNumbers } });
+    // we are matching unformattedPhone (aka no country code)
+    const users = await User.find({ unformattedPhone: { $in: phoneNumbers } });
     return users;
   } catch (error) {
     throw new Error(`could not find contacts users: ${error}`);
