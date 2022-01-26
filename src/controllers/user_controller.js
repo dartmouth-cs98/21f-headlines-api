@@ -20,7 +20,7 @@ export const getUser = async (id) => {
 export const getUsers = async (searchTerm) => {
   try {
     // option i is to ignore case sensitivity
-    const users = await User.find({ email: { $regex: `^${searchTerm}`, $options: 'i' } }).limit(10);
+    const users = await User.find({ username: { $regex: `^${searchTerm}`, $options: 'i' } }).limit(10);
     return users;
   } catch (error) {
     throw new Error(`could not find users: ${error}`);
