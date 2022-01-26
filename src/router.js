@@ -50,26 +50,6 @@ router.route('/articles/:articleID')
     }
   });
 
-// req.body needs to be a dict with a key "idList",
-// whose value is an array of articles ids as strs
-router.route('/learn')
-  .post(async (req, res) => {
-    try {
-      const articles = [];
-      // eslint-disable-next-line no-restricted-syntax
-      for (const i of req.body.idList) {
-      // eslint-disable-next-line no-await-in-loop
-        const article = await Articles.getArticle({ _id: i });
-        if (article) {
-          articles.push(article);
-        }
-      }
-      res.json({ articles });
-    } catch (error) {
-      res.status(500).send({ error: error.toString() });
-    }
-  });
-
 router.route('/questions')
   .get(async (req, res) => {
     try {
@@ -98,20 +78,21 @@ router.route('/questions')
   });
 
 router.route('/questions/:questionID')
-// this is to report a question
-// req.body needs to be a dict with a key "report",
-// whose value is a string with reporting messages
-  .post(async (req, res) => {
+// this is to update a question
+  .put(async (req, res) => {
     try {
-      const qn = await Questions.getQuestion(req.params.questionID);
-      let { report } = qn;
-      if (report) {
-        report.push(req.body.report);
-      } else {
-        report = [req.body.report];
-      }
-      const updatedQn = await Questions.updateQuestion(qn.id, { report });
-      res.json({ updatedQn });
+      const question = await Questions.updateQuestion(req.params.questionID, req.body.question);
+      res.json(question);
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+
+router.route('/adminQuestions')
+  .get(async (req, res) => {
+    try {
+      const question = await Questions.getQuestionsToCheck(req.query, req.query.num);
+      res.json(question);
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
@@ -132,27 +113,6 @@ router.post('/signup', async (req, res) => {
     res.json({ token, email: req.body.email });
   } catch (error) {
     res.status(422).send({ error: error.toString() });
-  }
-});
-
-// Endpoint for rating a question
-router.put('/rateQuestion/:questionId', async (req, res) => {
-  try {
-    const data = req.body;
-    console.log(data);
-    await Questions.rateQuestion(req.params.questionId, data.change);
-    res.json({ success: 'true' });
-  } catch (error) {
-    res.status(420).send({ error: error.toString() });
-  }
-});
-
-router.delete('/deleteQuestions/:lowScore', async (req, res) => {
-  try {
-    await Questions.deleteBadQuestions(req.params.lowScore);
-    res.json({ success: 'true' });
-  } catch (error) {
-    res.status(420).send({ error: error.toString() });
   }
 });
 
@@ -190,6 +150,17 @@ router.route('/dailyChallenges')
   .get(async (req, res) => {
     try {
       const challenge = await DailyChallenge.getDailyChallenge(req.query.date);
+      res.json(challenge);
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+
+router.route('/dailyChallenges/:id/questions')
+  // this is used specifically for adding a question to a daily challenge
+  .put(async (req, res) => {
+    try {
+      const challenge = await DailyChallenge.addQuestionToDailyChallenge(req.params.id, req.query.qId);
       res.json(challenge);
     } catch (error) {
       res.status(422).send({ error: error.toString() });
@@ -267,5 +238,46 @@ router.route('/users/:userID')
       res.status(422).send({ error: error.toString() });
     }
   });
+
+// req.body needs to be a dict with a key "idList",
+// whose value is an array of articles ids as strs
+router.route('/learn')
+  .post(async (req, res) => {
+    try {
+      const articles = [];
+      // eslint-disable-next-line no-restricted-syntax
+      for (const i of req.body.idList) {
+      // eslint-disable-next-line no-await-in-loop
+        const article = await Articles.getArticle({ _id: i });
+        if (article) {
+          articles.push(article);
+        }
+      }
+      res.json({ articles });
+    } catch (error) {
+      res.status(500).send({ error: error.toString() });
+    }
+  });
+
+router.delete('/deleteQuestions/:lowScore', async (req, res) => {
+  try {
+    await Questions.deleteBadQuestions(req.params.lowScore);
+    res.json({ success: 'true' });
+  } catch (error) {
+    res.status(420).send({ error: error.toString() });
+  }
+});
+
+// Endpoint for rating a question
+router.put('/rateQuestion/:questionId', async (req, res) => {
+  try {
+    const data = req.body;
+    console.log(data);
+    await Questions.rateQuestion(req.params.questionId, data.change);
+    res.json({ success: 'true' });
+  } catch (error) {
+    res.status(420).send({ error: error.toString() });
+  }
+});
 
 export default router;
