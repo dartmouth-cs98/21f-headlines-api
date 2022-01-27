@@ -24,6 +24,7 @@ router.route('/articles')
       res.status(422).send({ error: error.toString() });
     }
   })
+  // Again not authenticated to allow python code to access it.
   .post(async (req, res) => {
     try {
       const articleId = await Articles.createArticle(req.body.articleInfo);
@@ -75,6 +76,7 @@ router.route('/questions')
   // or {_id: "h192992hskas"}. Second key in req.body should be "question"
   // whose value is a dict with question info such as
   // statement, answers, correct_answer etc
+  // Unfortunately we can't authenticate this right now because the python calls these endpoints without being authenticated rn.
   .post(async (req, res) => {
     try {
       const article = await Articles.getArticle(req.body.articleInfo);
@@ -92,8 +94,12 @@ router.route('/questions/:questionID')
 // this is to update a question
   .put(async (req, res) => {
     try {
-      const question = await Questions.updateQuestion(req.params.questionID, req.body.question);
-      res.json(question);
+      if (req.currentUser) {
+        const question = await Questions.updateQuestion(req.params.questionID, req.body.question);
+        res.json(question);
+      } else {
+        res.status(401).send('Not Authenticated');
+      }
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
@@ -102,8 +108,12 @@ router.route('/questions/:questionID')
 router.route('/adminQuestions')
   .get(async (req, res) => {
     try {
-      const question = await Questions.getQuestionsToCheck(req.query, req.query.num);
-      res.json(question);
+      if (req.currentUser) {
+        const question = await Questions.getQuestionsToCheck(req.query, req.query.num);
+        res.json(question);
+      } else {
+        res.status(401).send('Not Authenticated');
+      }
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
@@ -113,9 +123,12 @@ router.route('/adminQuestions')
 router.put('/rateQuestion/:questionId', async (req, res) => {
   try {
     const data = req.body;
-    console.log(data);
-    await Questions.rateQuestion(req.params.questionId, data.change);
-    res.json({ success: 'true' });
+    if (req.currentUser) {
+      await Questions.rateQuestion(req.params.questionId, data.change);
+      res.json({ success: 'true' });
+    } else {
+      res.status(401).send('Not Authenticated');
+    }
   } catch (error) {
     res.status(420).send({ error: error.toString() });
   }
@@ -133,8 +146,12 @@ router.delete('/deleteQuestions/:lowScore', async (req, res) => {
 router.route('/dailyChallenges')
   .post(async (req, res) => {
     try {
-      const challengeId = await DailyChallenge.createDailyChallenge(req.body.challenge);
-      res.json(challengeId);
+      if (req.currentUser) {
+        const challengeId = await DailyChallenge.createDailyChallenge(req.body.challenge);
+        res.json(challengeId);
+      } else {
+        res.status(401).send('Not Authenticated');
+      }
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
@@ -156,8 +173,12 @@ router.route('/dailyChallenges/:id/questions')
   // this is used specifically for adding a question to a daily challenge
   .put(async (req, res) => {
     try {
-      const challenge = await DailyChallenge.addQuestionToDailyChallenge(req.params.id, req.query.qId);
-      res.json(challenge);
+      if (req.currentUser) {
+        const challenge = await DailyChallenge.addQuestionToDailyChallenge(req.params.id, req.query.qId);
+        res.json(challenge);
+      } else {
+        res.status(401).send('Not Authenticated');
+      }
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
@@ -166,8 +187,12 @@ router.route('/dailyChallenges/:id/questions')
 router.route('/userChallenges')
   .post(async (req, res) => {
     try {
-      const challengeId = await UserChallenge.createUserChallenge(req.body.challenge);
-      res.json(challengeId);
+      if (req.currentUser) {
+        const challengeId = await UserChallenge.createUserChallenge(req.body.challenge);
+        res.json(challengeId);
+      } else {
+        res.status(401).send('Not Authenticated');
+      }
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
@@ -190,8 +215,7 @@ router.route('/userChallenges')
 router.route('/userChallenges/:userID')
   .get(async (req, res) => {
     try {
-      const auth = req.currentUser;
-      if (auth) {
+      if (req.currentUser) {
         // the 7 means we are getting the last week
         const challenge = await UserChallenge.getUserChallenges(req.params.userID, 7);
         res.json(challenge);
@@ -206,25 +230,9 @@ router.route('/userChallenges/:userID')
 router.route('/userChallenges/friends/:userID')
   .get(async (req, res) => {
     try {
-      const auth = req.currentUser;
-      if (auth) {
+      if (req.currentUser) {
         const friendChallenges = await UserChallenge.getUserFriendChallenges(req.params.userID, req.query.date);
         res.json(friendChallenges);
-      } else {
-        res.status(401).send('Not authorized');
-      }
-    } catch (error) {
-      res.status(422).send({ error: error.toString() });
-    }
-  });
-
-// An example for simply testing if the user is authenticated or not.
-router.route('/authTest')
-  .get(async (req, res) => {
-    try {
-      const auth = req.currentUser;
-      if (auth) {
-        res.json({ hi: 'Nice you are authenticated! Awesome' });
       } else {
         res.status(401).send('Not authorized');
       }
@@ -237,21 +245,27 @@ router.route('/authTest')
 router.route('/users')
   .get(async (req, res) => {
     try {
-      const users = await Users.getUsers(req.query.term);
-      res.json(users);
+      if (req.currentUser) {
+        const users = await Users.getUsers(req.query.term);
+        res.json(users);
+      } else {
+        res.status(401).send('Not Authenticated');
+      }
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
-  }).post(async (req, res) => {
+  })
+  .post(async (req, res) => {
+    console.log('post request made');
     try {
-      // if (req.currentUser) {
+      if (req.currentUser) {
       // console.log(req.body);
       // call postUser to create a new user with the given information. They do not need to be authenticated for this
-      const user = await Users.postUser(req.body);
-      res.json(user);
-      // } else {
-      //  res.status(401).send('Not authorized');
-      // }
+        const user = await Users.postUser(req.body);
+        res.json(user);
+      } else {
+        res.status(401).send('Not authorized');
+      }
     } catch (error) {
       res.status(422).send({ error: error.toString() });
       console.log(error.toString());
@@ -262,8 +276,12 @@ router.route('/users/contacts')
 // this is really a get, making it a post to include a body
   .post(async (req, res) => {
     try {
-      const users = await Users.getContacts(req.body.phoneNumbers);
-      res.json(users);
+      if (req.currentUser) {
+        const users = await Users.getContacts(req.body.phoneNumbers);
+        res.json(users);
+      } else {
+        res.status(401).send('Not Authenticated');
+      }
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
@@ -273,8 +291,8 @@ router.route('/users/contacts')
 router.route('/users/:userID')
   .put(async (req, res) => { // to update user info
     try {
-      const auth = req.currentUser;
-      if (auth) {
+      console.log('Put from userID');
+      if (req.currentUser) {
         const user = await Users.updateUser(req.params.userID, req.body);
         res.json(user);
       } else {
@@ -285,14 +303,14 @@ router.route('/users/:userID')
     }
   }).get(async (req, res) => { // to get user info
     try {
-      const auth = req.currentUser;
-      if (auth) {
+      if (req.currentUser) {
+        console.log('getting user');
         let user;
         console.log(req.query);
-        if (req.query.isFirebase) {
+        if (req.query.isFirebase === 'true') {
           user = await Users.getUser(null, req.params.userID);
         } else {
-          user = await Users.getUser(req.params.userID);
+          user = await Users.getUser(req.params.userID, null, null);
         }
         res.json(user);
       } else {

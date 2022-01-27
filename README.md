@@ -41,6 +41,12 @@ Headlines is a mobile app that is a trivia game about current events. Users can 
 - `GET /userChallenges/:userID`: get a user's performance over the last 7 days
 - `GET /userChallenges/friends/:userID`: get the performance of the friends of the user with `userID`
 
+### Users
+- `POST /users/`: This end point creates a new user in the mongo database
+- `GET /users/?term="jimmy"`: This endpoint takes a query term and teruns the users in the database that match that query term (the query "jimmy is put here as an example)
+- `GET /users/:userID/?isFirebase='false'`, This endpoint takes in a user ID and gets the user of that id. Takes in a query term to determine whether or not we are searching for a user with their mongoID, or firebaseID
+- `PUT /users/:userID` Takes in a mongoID as parameter and updates the user with the body of the post. 
+
 ## Architecture
 
 #### Overall descriptions of code organization and tools and libraries used

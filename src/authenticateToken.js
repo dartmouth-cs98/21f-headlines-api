@@ -1,7 +1,11 @@
+import dotenv from 'dotenv';
+
+dotenv.config({ silent: true });
+
 const admin = require('firebase-admin');
 // We need to get this json file in the root of our server.
 // eslint-disable-next-line import/no-absolute-path
-const serviceAccount = require('/Users/jamesfleming/Desktop/serviceAccountKey.json');
+const serviceAccount = require('../serviceAccountKey.json');
 // https://javascript.plainenglish.io/lets-create-react-app-with-firebase-auth-express-backend-and-mongodb-database-805c83e4dadd
 // Code pulled from above
 
