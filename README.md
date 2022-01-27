@@ -20,10 +20,18 @@ Headlines is a mobile app that is a trivia game about current events. Users can 
     * daily challenge is in Mongo in UTC, will store at UTC time of 6 each day
     * user challenges are also stored in UTC, just store with same date as daily challenge
 
+### Questions
+- `GET /adminQuestions/?num=&?approved_status=&in_daily_quiz=`: get questions for admin mode (num is number of question, in_daily_quiz is optional, should only take `null`)
+- `PUT /questions/:id`: update a question where id is the question id and `req.body.question` contains fields and values to update
+  - Example `req.body = {
+	            "question": {"approved_status": "approved"}
+            }`
+
 ### Daily Challenges
 
 - `POST /dailyChallenges` where `req.body.challenge` is the daily challenge to be added
-- `GET? /dailyChallenges/?date=date`: retrieve a daily challenge based on date
+- `GET /dailyChallenges/?date=date`: retrieve a daily challenge based on date
+- `PUT /dailyChallenges/:id/questions?qId=question_id`: add a question to a daily challenge
 
 ### User Challenges
 

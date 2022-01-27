@@ -13,6 +13,7 @@ const UserSchema = new Schema({
   longest_streak: { type: Number, default: 0 },
   reliability_score: { type: Number, default: 0 },
   user_score: { type: Number, default: 0 },
+  role: { type: String, default: 'player' },
 },
 {
   toObject: { virtuals: true },

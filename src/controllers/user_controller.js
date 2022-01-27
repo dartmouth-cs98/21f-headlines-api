@@ -4,11 +4,11 @@ import User from '../models/user_model';
 dotenv.config({ silent: true });
 
 // Allow us to grab a user based on their mongo id or firebase id or username
-export const getUser = async (id, firebaseId, username) => {
+export const getUser = async (mongoid = null, firebaseId = null, username = null) => {
   try {
     let user;
-    if (id) {
-      user = await User.findOne({ _id: id });
+    if (mongoid) {
+      user = await User.findOne({ _id: mongoid });
     } else if (firebaseId) {
       // eslint-disable-next-line object-shorthand
       user = await User.findOne({ firebaseID: firebaseId });
@@ -26,7 +26,7 @@ export const getUser = async (id, firebaseId, username) => {
 export const getUsers = async (searchTerm) => {
   try {
     // option i is to ignore case sensitivity
-    const users = await User.find({ email: { $regex: `^${searchTerm}`, $options: 'i' } }).limit(10);
+    const users = await User.find({ username: { $regex: `^${searchTerm}`, $options: 'i' } }).limit(10);
     return users;
   } catch (error) {
     throw new Error(`could not find users: ${error}`);
@@ -35,7 +35,8 @@ export const getUsers = async (searchTerm) => {
 
 export const getContacts = async (phoneNumbers) => {
   try {
-    const users = await User.find({ phone: { $in: phoneNumbers } });
+    // we are matching unformattedPhone (aka no country code)
+    const users = await User.find({ unformattedPhone: { $in: phoneNumbers } });
     return users;
   } catch (error) {
     throw new Error(`could not find contacts users: ${error}`);
@@ -62,7 +63,7 @@ export const postUser = async (data) => {
   console.log(newUser);
   try {
     const savedUser = await newUser.save();
-    return savedUser.id;
+    return savedUser;
   } catch (error) {
     throw new Error(`unable to add new user to database: ${error}`);
   }
