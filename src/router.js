@@ -4,7 +4,6 @@ import * as Questions from './controllers/question_controller';
 import * as Users from './controllers/user_controller';
 import * as DailyChallenge from './controllers/daily_challenges_controller';
 import * as UserChallenge from './controllers/user_challenges_controller';
-import { requireSignin } from './services/passport';
 
 const router = Router();
 
@@ -15,12 +14,17 @@ router.get('/api', (req, res) => {
 router.route('/articles')
   .get(async (req, res) => {
     try {
-      const articles = await Articles.getArticles();
-      res.json(articles);
+      if (req.currentUser) {
+        const articles = await Articles.getArticles();
+        res.json(articles);
+      } else {
+        res.status(401).send('Not authorized');
+      }
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
   })
+  // Again not authenticated to allow python code to access it.
   .post(async (req, res) => {
     try {
       const articleId = await Articles.createArticle(req.body.articleInfo);
@@ -43,8 +47,12 @@ router.route('/articles')
 router.route('/articles/:articleID')
   .get(async (req, res) => {
     try {
-      const article = await Articles.getArticle({ _id: req.params.articleID });
-      res.json(article);
+      if (req.currentUser) {
+        const article = await Articles.getArticle({ _id: req.params.articleID });
+        res.json(article);
+      } else {
+        res.status(401).send('Not authorized');
+      }
     } catch (error) {
       res.status(500).json({ error });
     }
@@ -53,8 +61,12 @@ router.route('/articles/:articleID')
 router.route('/questions')
   .get(async (req, res) => {
     try {
-      const questions = await Questions.getNumQuestions(req.query.num);
-      res.json({ questions });
+      if (req.currentUser) {
+        const questions = await Questions.getNumQuestions(req.query.num);
+        res.json({ questions });
+      } else {
+        res.status(401).send('Not authorized');
+      }
     } catch (error) {
       res.status(500).send({ error: error.toString() });
     }
@@ -64,6 +76,7 @@ router.route('/questions')
   // or {_id: "h192992hskas"}. Second key in req.body should be "question"
   // whose value is a dict with question info such as
   // statement, answers, correct_answer etc
+  // Unfortunately we can't authenticate this right now because the python calls these endpoints without being authenticated rn.
   .post(async (req, res) => {
     try {
       const article = await Articles.getArticle(req.body.articleInfo);
@@ -81,8 +94,12 @@ router.route('/questions/:questionID')
 // this is to update a question
   .put(async (req, res) => {
     try {
-      const question = await Questions.updateQuestion(req.params.questionID, req.body.question);
-      res.json(question);
+      if (req.currentUser) {
+        const question = await Questions.updateQuestion(req.params.questionID, req.body.question);
+        res.json(question);
+      } else {
+        res.status(401).send('Not Authenticated');
+      }
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
@@ -91,173 +108,31 @@ router.route('/questions/:questionID')
 router.route('/adminQuestions')
   .get(async (req, res) => {
     try {
-      const question = await Questions.getQuestionsToCheck(req.query, req.query.num);
-      res.json(question);
+      if (req.currentUser) {
+        const question = await Questions.getQuestionsToCheck(req.query, req.query.num);
+        res.json(question);
+      } else {
+        res.status(401).send('Not Authenticated');
+      }
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
   });
 
-router.post('/signin', requireSignin, async (req, res) => {
-  try {
-    const token = Users.signin(req.user);
-    res.json({ token, email: req.user.email });
-  } catch (error) {
-    res.status(422).send({ error: error.toString() });
-  }
-});
-
-router.post('/signup', async (req, res) => {
-  try {
-    const token = await Users.signup(req.body);
-    res.json({ token, email: req.body.email });
-  } catch (error) {
-    res.status(422).send({ error: error.toString() });
-  }
-});
-
-// Endpoint for simply checking if a username is taken or not
-router.get('/checkUsername/:attemptedUsername', async (req, res) => {
-  try {
-    const isAllowed = await Users.checkUsername(req.params.attemptedUsername);
-    res.json({ isAllowed });
-  } catch (error) {
-    res.status(420).send({ error: error.toString() });
-  }
-});
-
-// Endpoint for updating a user's profile name.
-router.put('/setUsername/:userId', async (req, res) => {
+// Endpoint for rating a question
+router.put('/rateQuestion/:questionId', async (req, res) => {
   try {
     const data = req.body;
-    const didChange = await Users.chooseUsername(data.attemptedUsername, req.params.userId);
-    // Return back whether or not the username was actually changed.
-    res.json({ didChange });
+    if (req.currentUser) {
+      await Questions.rateQuestion(req.params.questionId, data.change);
+      res.json({ success: 'true' });
+    } else {
+      res.status(401).send('Not Authenticated');
+    }
   } catch (error) {
     res.status(420).send({ error: error.toString() });
   }
 });
-
-router.route('/dailyChallenges')
-  .post(async (req, res) => {
-    try {
-      const challengeId = await DailyChallenge.createDailyChallenge(req.body.challenge);
-      res.json(challengeId);
-    } catch (error) {
-      res.status(422).send({ error: error.toString() });
-    }
-  })
-  .get(async (req, res) => {
-    try {
-      const challenge = await DailyChallenge.getDailyChallenge(req.query.date);
-      res.json(challenge);
-    } catch (error) {
-      res.status(422).send({ error: error.toString() });
-    }
-  });
-
-router.route('/dailyChallenges/:id/questions')
-  // this is used specifically for adding a question to a daily challenge
-  .put(async (req, res) => {
-    try {
-      const challenge = await DailyChallenge.addQuestionToDailyChallenge(req.params.id, req.query.qId);
-      res.json(challenge);
-    } catch (error) {
-      res.status(422).send({ error: error.toString() });
-    }
-  });
-
-router.route('/userChallenges')
-  .post(async (req, res) => {
-    try {
-      const challengeId = await UserChallenge.createUserChallenge(req.body.challenge);
-      res.json(challengeId);
-    } catch (error) {
-      res.status(422).send({ error: error.toString() });
-    }
-  })
-  // gets the top ten performers on the daily challenge today (if they exist)
-  .get(async (req, res) => {
-    try {
-      const challenges = await UserChallenge.getTopUserChallenges(req.query.date);
-      res.json(challenges);
-    } catch (error) {
-      res.status(422).send({ error: error.toString() });
-    }
-  });
-
-// returns a users last 7 days of performance in list
-router.route('/userChallenges/:userID')
-  .get(async (req, res) => {
-    try {
-      // the 7 means we are getting the last week
-      const challenge = await UserChallenge.getUserChallenges(req.params.userID, 7);
-      res.json(challenge);
-    } catch (error) {
-      res.status(422).send({ error: error.toString() });
-    }
-  });
-
-router.route('/userChallenges/friends/:userID')
-  .get(async (req, res) => {
-    try {
-      const friendChallenges = await UserChallenge.getUserFriendChallenges(req.params.userID, req.query.date);
-      res.json(friendChallenges);
-    } catch (error) {
-      res.status(422).send({ error: error.toString() });
-    }
-  });
-
-router.route('/users')
-  .get(async (req, res) => {
-    try {
-      const users = await Users.getUsers(req.query.term);
-      res.json(users);
-    } catch (error) {
-      res.status(422).send({ error: error.toString() });
-    }
-  });
-
-router.route('/users/contacts')
-// this is really a get, making it a post to include a body
-  .post(async (req, res) => {
-    try {
-      const users = await Users.getContacts(req.body.phoneNumbers);
-      res.json(users);
-    } catch (error) {
-      res.status(422).send({ error: error.toString() });
-    }
-  });
-
-router.route('/users/:userID')
-  .put(async (req, res) => { // to update user info
-    try {
-      const user = await Users.updateUser(req.params.userID, req.body);
-      res.json(user);
-    } catch (error) {
-      res.status(422).send({ error: error.toString() });
-    }
-  });
-
-// req.body needs to be a dict with a key "idList",
-// whose value is an array of articles ids as strs
-router.route('/learn')
-  .post(async (req, res) => {
-    try {
-      const articles = [];
-      // eslint-disable-next-line no-restricted-syntax
-      for (const i of req.body.idList) {
-      // eslint-disable-next-line no-await-in-loop
-        const article = await Articles.getArticle({ _id: i });
-        if (article) {
-          articles.push(article);
-        }
-      }
-      res.json({ articles });
-    } catch (error) {
-      res.status(500).send({ error: error.toString() });
-    }
-  });
 
 router.delete('/deleteQuestions/:lowScore', async (req, res) => {
   try {
@@ -268,16 +143,212 @@ router.delete('/deleteQuestions/:lowScore', async (req, res) => {
   }
 });
 
-// Endpoint for rating a question
-router.put('/rateQuestion/:questionId', async (req, res) => {
+router.route('/dailyChallenges')
+  .post(async (req, res) => {
+    try {
+      if (req.currentUser) {
+        const challengeId = await DailyChallenge.createDailyChallenge(req.body.challenge);
+        res.json(challengeId);
+      } else {
+        res.status(401).send('Not Authenticated');
+      }
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  })
+  .get(async (req, res) => {
+    try {
+      if (req.currentUser) {
+        const challenge = await DailyChallenge.getDailyChallenge(req.query.date);
+        res.json(challenge);
+      } else {
+        res.status(401).send('Not authorized');
+      }
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+
+router.route('/dailyChallenges/:id/questions')
+  // this is used specifically for adding a question to a daily challenge
+  .put(async (req, res) => {
+    try {
+      if (req.currentUser) {
+        const challenge = await DailyChallenge.addQuestionToDailyChallenge(req.params.id, req.query.qId);
+        res.json(challenge);
+      } else {
+        res.status(401).send('Not Authenticated');
+      }
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+
+router.route('/userChallenges')
+  .post(async (req, res) => {
+    try {
+      if (req.currentUser) {
+        const challengeId = await UserChallenge.createUserChallenge(req.body.challenge);
+        res.json(challengeId);
+      } else {
+        res.status(401).send('Not Authenticated');
+      }
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  })
+  // gets the top ten performers on the daily challenge today (if they exist)
+  .get(async (req, res) => {
+    try {
+      if (req.currentUser) {
+        const challenges = await UserChallenge.getTopUserChallenges(req.query.date);
+        res.json(challenges);
+      } else {
+        res.status(401).send('Not authorized');
+      }
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+
+// returns a users last 7 days of performance in list
+router.route('/userChallenges/:userID')
+  .get(async (req, res) => {
+    try {
+      if (req.currentUser) {
+        // the 7 means we are getting the last week
+        const challenge = await UserChallenge.getUserChallenges(req.params.userID, 7);
+        res.json(challenge);
+      } else {
+        res.status(401).send('Not authorized');
+      }
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+
+router.route('/userChallenges/friends/:userID')
+  .get(async (req, res) => {
+    try {
+      if (req.currentUser) {
+        const friendChallenges = await UserChallenge.getUserFriendChallenges(req.params.userID, req.query.date);
+        res.json(friendChallenges);
+      } else {
+        res.status(401).send('Not authorized');
+      }
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+
+// Route for users. Can get a query result of users or post to users a new users
+router.route('/users')
+  .get(async (req, res) => {
+    try {
+      if (req.currentUser) {
+        const users = await Users.getUsers(req.query.term);
+        res.json(users);
+      } else {
+        res.status(401).send('Not Authenticated');
+      }
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  })
+  .post(async (req, res) => {
+    console.log('post request made');
+    try {
+      if (req.currentUser) {
+      // console.log(req.body);
+      // call postUser to create a new user with the given information. They do not need to be authenticated for this
+        const user = await Users.postUser(req.body);
+        res.json(user);
+      } else {
+        res.status(401).send('Not authorized');
+      }
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+      console.log(error.toString());
+    }
+  });
+
+router.route('/users/contacts')
+// this is really a get, making it a post to include a body
+  .post(async (req, res) => {
+    try {
+      if (req.currentUser) {
+        const users = await Users.getContacts(req.body.phoneNumbers);
+        res.json(users);
+      } else {
+        res.status(401).send('Not Authenticated');
+      }
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+// This route is for accessing a specific user in order to update their information
+// For get it can be either mongo id or firebase id
+router.route('/users/:userID')
+  .put(async (req, res) => { // to update user info
+    try {
+      console.log('Put from userID');
+      if (req.currentUser) {
+        const user = await Users.updateUser(req.params.userID, req.body);
+        res.json(user);
+      } else {
+        res.status(401).send('Not Authenticated');
+      }
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  }).get(async (req, res) => { // to get user info
+    try {
+      if (req.currentUser) {
+        console.log('getting user');
+        let user;
+        console.log(req.query);
+        if (req.query.isFirebase === 'true') {
+          user = await Users.getUser(null, req.params.userID);
+        } else {
+          user = await Users.getUser(req.params.userID, null, null);
+        }
+        res.json(user);
+      } else {
+        res.status(401).send('Not Authenticated');
+      }
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+
+router.route('/users/exists/:userID')
+  .get(async (req, res) => { // to see if a user exists or not
+    try {
+      const user = await Users.getUser(null, req.params.userID);
+      if (user) {
+        res.json({ exists: true });
+      } else {
+        res.json({ exists: false });
+      }
+
+    // Get user throws error if user doesn't exists.
+    } catch (error) {
+      res.json({ exists: false });
+    }
+  });
+
+// Endpoint for simply checking if a username is taken or not, very, COUld be condensed into /exists endpoint
+router.get('/users/checkUsername/:attemptedUsername', async (req, res) => {
   try {
-    const data = req.body;
-    console.log(data);
-    await Questions.rateQuestion(req.params.questionId, data.change);
-    res.json({ success: 'true' });
+    const user = await Users.getUser(null, null, req.params.attemptedUsername);
+    if (user) {
+      res.json({ taken: true });
+    } else {
+      res.json({ taken: false });
+    }
   } catch (error) {
+    console.log(error);
     res.status(420).send({ error: error.toString() });
   }
 });
-
 export default router;
