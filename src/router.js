@@ -275,20 +275,13 @@ router.route('/users/contacts')
 // this is really a get, making it a post to include a body
   .post(async (req, res) => {
     try {
-<<<<<<< HEAD
-      console.log(req.body.phoneNumbers);
-      const users = await Users.getContacts(req.body.phoneNumbers);
-      res.json(users);
-=======
       if (req.currentUser) {
         const users = await Users.getContacts(req.body.phoneNumbers);
         res.json(users);
       } else {
         res.status(401).send('Not Authenticated');
       }
->>>>>>> 70f125c4c414060e86f9884e2b8217763019b9c4
     } catch (error) {
-      console.log('test')
       res.status(422).send({ error: error.toString() });
     }
   });
