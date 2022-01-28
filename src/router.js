@@ -216,8 +216,7 @@ router.route('/userChallenges/:userID')
   .get(async (req, res) => {
     try {
       if (req.currentUser) {
-        // the 7 means we are getting the last week
-        const challenge = await UserChallenge.getUserChallenges(req.params.userID, 7);
+        const challenge = await UserChallenge.getUserChallenges(req.params.userID, req.query.date);
         res.json(challenge);
       } else {
         res.status(401).send('Not authorized');
