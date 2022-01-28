@@ -25,7 +25,7 @@ export const getTopUserChallenges = async (date, num = 10) => {
     console.log(start);
     console.log(end);
     // used this: https://stackoverflow.com/questions/61178772/mongodb-how-to-find-the-10-largest-values-in-a-collection
-    const challenge = await UserChallenge.find({ date: { $gte: start, $lt: end } }).sort({ number_correct: -1, seconds_taken: 1 }).limit(num).populate('user', 'email');
+    const challenge = await UserChallenge.find({ date: { $gte: start, $lt: end } }).sort({ number_correct: -1, seconds_taken: 1 }).limit(num).populate('user');
     return challenge;
   } catch (error) {
     throw new Error(`get daily challenge error: ${error}`);
@@ -38,7 +38,7 @@ export const getUserChallenges = async (id, date) => {
     const { start, end } = getStartEndDate(date);
 
     // used this: https://stackoverflow.com/questions/61178772/mongodb-how-to-find-the-10-largest-values-in-a-collection
-    const challenges = await UserChallenge.find({ user: id, date: { $gte: start, $lt: end } }).sort({ date: 1 }).populate('user', 'email');
+    const challenges = await UserChallenge.find({ user: id, date: { $gte: start, $lt: end } }).sort({ date: 1 }).populate('user');
     return challenges;
   } catch (error) {
     throw new Error(`get daily challenge error: ${error}`);
@@ -54,7 +54,7 @@ export const getUserFriendChallenges = async (id, date) => {
     const user = await User.getUser(id);
     console.log(user);
     const followingIds = user.following;
-    const friendsToday = await UserChallenge.find({ user: { $in: followingIds }, date: { $gte: start, $lt: end } }).sort({ number_correct: -1, seconds_taken: 1 }).populate('user', 'email');
+    const friendsToday = await UserChallenge.find({ user: { $in: followingIds }, date: { $gte: start, $lt: end } }).sort({ number_correct: -1, seconds_taken: 1 }).populate('user');
     return friendsToday;
   } catch (error) {
     throw new Error(`get user friend challenges error: ${error}`);
