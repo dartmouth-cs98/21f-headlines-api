@@ -13,6 +13,8 @@ const mongoURI = 'mongodb+srv://headlines_user:e202R1PXHho11bIU@cluster0.vapw9.m
 // for testing
 // const mongoURI = 'mongodb+srv://headlines_user:e202R1PXHho11bIU@cluster0.vapw9.mongodb.net/test?retryWrites=true&w=majority';
 
+const decodeIDToken = require('./authenticateToken');
+
 mongoose.connect(mongoURI).then(() => {
   console.log('connected to database:', mongoURI);
 }).catch((err) => {
@@ -24,6 +26,9 @@ const app = express();
 
 // enable/disable cross origin resource sharing if necessary
 app.use(cors());
+
+// Allow our routes to use this decodeIDToken function.
+app.use(decodeIDToken);
 
 // enable/disable http request logging
 app.use(morgan('dev'));
