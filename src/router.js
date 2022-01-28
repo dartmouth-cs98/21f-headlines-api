@@ -191,7 +191,7 @@ router.route('/userChallenges/:userID')
   .get(async (req, res) => {
     try {
       // the 7 means we are getting the last week
-      const challenge = await UserChallenge.getUserChallenges(req.params.userID, 7);
+      const challenge = await UserChallenge.getUserChallenges(req.params.userID, req.query.date);
       res.json(challenge);
     } catch (error) {
       res.status(422).send({ error: error.toString() });
@@ -222,9 +222,11 @@ router.route('/users/contacts')
 // this is really a get, making it a post to include a body
   .post(async (req, res) => {
     try {
+      console.log(req.body.phoneNumbers);
       const users = await Users.getContacts(req.body.phoneNumbers);
       res.json(users);
     } catch (error) {
+      console.log('test')
       res.status(422).send({ error: error.toString() });
     }
   });
