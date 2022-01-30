@@ -44,8 +44,8 @@ export const getQuestionsToCheck = async (filters, num = 10) => {
   const newFilters = {};
   newFilters.approved_status = filters.approved_status;
 
-  if (filters.in_daily_quiz) {
-    newFilters.in_daily_quiz = filters.in_daily_quiz;
+  if (filters.in_daily_quiz && filters.in_daily_quiz === 'null') {
+    newFilters.in_daily_quiz = null;
   }
 
   const res = await Question.find(newFilters).limit(num);
