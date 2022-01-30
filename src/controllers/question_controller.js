@@ -48,7 +48,7 @@ export const getQuestionsToCheck = async (filters, num = 10) => {
     newFilters.in_daily_quiz = null;
   }
 
-  const res = await Question.find(newFilters).limit(num);
+  const res = await Question.find(newFilters).limit(parseInt(num, 10));
   return res;
 };
 
