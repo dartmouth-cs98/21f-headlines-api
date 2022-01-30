@@ -14,6 +14,9 @@ const UserSchema = new Schema({
   reliability_score: { type: Number, default: 0 },
   user_score: { type: Number, default: 0 },
   role: { type: String, default: 'player' },
+  qns_submitted: { type: Number, default: 0 },
+  qns_rated: { type: Number, default: 0 },
+  qns_got_right: { type: Number, default: 0 },
 },
 {
   toObject: { virtuals: true },
