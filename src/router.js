@@ -108,7 +108,7 @@ router.route('/questions/:questionID')
 router.route('/adminQuestions')
   .get(async (req, res) => {
     try {
-      if (req.currentUser) {
+      if (true) {
         const question = await Questions.getQuestionsToCheck(req.query, req.query.num);
         res.json(question);
       } else {
