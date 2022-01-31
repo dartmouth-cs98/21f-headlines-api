@@ -17,6 +17,7 @@ const UserSchema = new Schema({
   qns_submitted: { type: Number, default: 0 },
   qns_rated: { type: Number, default: 0 },
   qns_got_right: { type: Number, default: 0 },
+  identifier: { type: String },
 },
 {
   toObject: { virtuals: true },
