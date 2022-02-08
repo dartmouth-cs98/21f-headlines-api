@@ -18,6 +18,7 @@ const UserSchema = new Schema({
   qns_rated: { type: Number, default: 0 },
   qns_got_right: { type: Number, default: 0 },
   identifier: { type: String },
+  notifications_token: { type: String },
 },
 {
   toObject: { virtuals: true },
