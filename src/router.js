@@ -108,7 +108,7 @@ router.route('/questions/:questionID')
 router.route('/adminQuestions')
   .get(async (req, res) => {
     try {
-      if (true) {
+      if (req.currentUser) {
         const question = await Questions.getQuestionsToCheck(req.query, req.query.num);
         res.json(question);
       } else {
@@ -211,12 +211,13 @@ router.route('/userChallenges')
     }
   });
 
-// returns a users last 7 days of performance in list
 router.route('/userChallenges/:userID')
   .get(async (req, res) => {
     try {
       if (req.currentUser) {
-        const challenge = await UserChallenge.getUserChallenges(req.params.userID, req.query.date);
+        // default to one day back
+        const daysBack = req.query.daysBack ? req.query.daysBack : 1;
+        const challenge = await UserChallenge.getUserChallenges(req.params.userID, req.query.date, daysBack);
         res.json(challenge);
       } else {
         res.status(401).send('Not authorized');
