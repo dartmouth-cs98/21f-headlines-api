@@ -91,7 +91,8 @@ export const updateUser = async (id, fields, remove) => {
     if (fields.follow) { // following someone
       const update = { following: { $each: [fields.follow] } };
       let user;
-      if (remove) {
+      // Remember that query terms are strings not booleans
+      if (remove === 'true') {
         user = await User
           .findByIdAndUpdate(id, { $pull: { following: fields.follow } }, options)
           .populate('following', 'username')
@@ -106,8 +107,8 @@ export const updateUser = async (id, fields, remove) => {
     } else if (fields.followed) { // someone is following us
       const update = { followers: { $each: [fields.followed] } };
       let user;
-      if (remove) {
-        console.log('Trying to remove a user');
+      if (remove === 'true') {
+        console.log(`Trying to remove a user ${remove}`);
         console.log(fields);
         user = await User
           .findByIdAndUpdate(id, { $pull: { followers: fields.followed } }, options)

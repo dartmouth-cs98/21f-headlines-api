@@ -292,6 +292,7 @@ router.route('/users/:userID')
     try {
       console.log('Put from userID');
       if (req.currentUser) {
+        // Remember that query terms are strings not booleans
         const user = await Users.updateUser(req.params.userID, req.body, req.query.remove);
         res.json(user);
       } else {
