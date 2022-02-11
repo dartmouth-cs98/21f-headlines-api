@@ -10,18 +10,18 @@ export const getUser = async (mongoid = null, firebaseId = null, username = null
     if (mongoid) {
       user = await User
         .findOne({ _id: mongoid })
-        .populate('following')
-        .populate('followers');
+        .populate('following', 'username')
+        .populate('followers', 'username');
     } else if (firebaseId) {
       user = await User
         .findOne({ firebaseID: firebaseId })
-        .populate('following')
-        .populate('followers');
+        .populate('following', 'username')
+        .populate('followers', 'username');
     } else {
       user = await User
         .findOne({ username })
-        .populate('following')
-        .populate('followers');
+        .populate('following', 'username')
+        .populate('followers', 'username');
     }
     return user;
   } catch (error) {
@@ -35,8 +35,8 @@ export const getUsers = async (searchTerm) => {
     // option i is to ignore case sensitivity
     const users = await User
       .find({ username: { $regex: `^${searchTerm}`, $options: 'i' } }).limit(10)
-      .populate('following')
-      .populate('followers');
+      .populate('following', 'username')
+      .populate('followers', 'username');
     return users;
   } catch (error) {
     throw new Error(`could not find users: ${error}`);
@@ -48,8 +48,8 @@ export const getContacts = async (phoneNumbers) => {
     // we are matching unformattedPhone (aka no country code)
     const users = await User
       .find({ unformattedPhone: { $in: phoneNumbers } })
-      .populate('following')
-      .populate('followers');
+      .populate('following', 'username')
+      .populate('followers', 'username');
     return users;
   } catch (error) {
     throw new Error(`could not find contacts users: ${error}`);
@@ -62,8 +62,8 @@ export const chooseUsername = async ({ attemptedUsername, userId }) => {
   try {
     await User
       .findByIdAndUpdate(userId, { $set: { username: attemptedUsername } })
-      .populate('following')
-      .populate('followers');
+      .populate('following', 'username')
+      .populate('followers', 'username');
     return true;
   } catch (error) {
     throw new Error(`choose Username: ${error}`);
@@ -85,28 +85,47 @@ export const postUser = async (data) => {
   }
 };
 
-export const updateUser = async (id, fields) => {
+export const updateUser = async (id, fields, remove) => {
   try {
     const options = { new: true };
     if (fields.follow) { // following someone
       const update = { following: { $each: [fields.follow] } };
-      const user = await User
-        .findByIdAndUpdate(id, { $addToSet: update }, options)
-        .populate('following')
-        .populate('followers');
+      let user;
+      // Remember that query terms are strings not booleans
+      if (remove === 'true') {
+        user = await User
+          .findByIdAndUpdate(id, { $pull: { following: fields.follow } }, options)
+          .populate('following', 'username')
+          .populate('followers', 'username');
+      } else {
+        user = await User
+          .findByIdAndUpdate(id, { $addToSet: update }, options)
+          .populate('following', 'username')
+          .populate('followers', 'username');
+      }
       return user;
     } else if (fields.followed) { // someone is following us
       const update = { followers: { $each: [fields.followed] } };
-      const user = await User
-        .findByIdAndUpdate(id, { $addToSet: update }, options)
-        .populate('following')
-        .populate('followers');
+      let user;
+      if (remove === 'true') {
+        console.log(`Trying to remove a user ${remove}`);
+        console.log(fields);
+        user = await User
+          .findByIdAndUpdate(id, { $pull: { followers: fields.followed } }, options)
+          .populate('following', 'username')
+          .populate('followers', 'username');
+      } else {
+        user = await User
+          .findByIdAndUpdate(id, { $addToSet: update }, options)
+          .populate('following', 'username')
+          .populate('followers', 'username');
+      }
       return user;
     } else { // else we are updating any other fields
       const user = await User
         .findByIdAndUpdate(id, fields, options)
-        .populate('following')
-        .populate('followers');
+        .populate('following', 'username')
+        .populate('followers', 'username');
       return user;
     }
   } catch (error) {
