@@ -296,7 +296,7 @@ router.route('/users/:userID')
     try {
       console.log('Put from userID');
       if (req.currentUser) {
-        const user = await Users.updateUser(req.params.userID, req.body);
+        const user = await Users.updateUser(req.params.userID, req.body, req.query.remove);
         console.log(user);
         res.json(user);
       } else {
