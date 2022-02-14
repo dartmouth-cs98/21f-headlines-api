@@ -15,6 +15,7 @@ export const createQuestion = async (articleId, qnInfo) => {
   qn.report = [];
   try {
     const savedQn = await qn.save();
+    console.log(savedQn);
     return savedQn.id;
   } catch (error) {
     throw new Error(`unable to create or add question to database: ${error}`);
