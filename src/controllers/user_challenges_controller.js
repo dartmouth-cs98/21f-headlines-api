@@ -54,7 +54,7 @@ export const getUserFriendChallenges = async (id, date) => {
     const user = await User.getUser(id);
     const followingIds = user.following;
     const friendsScores = await UserChallenge.find({ user: { $in: followingIds }, date: { $gte: start, $lt: end } }).sort({ number_correct: -1, seconds_taken: 1 }).populate('user');
-    const myScore = await UserChallenge.findOne({ user: id, date: { $gte: start, $lt: end } });
+    const myScore = await UserChallenge.findOne({ user: id, date: { $gte: start, $lt: end } }).populate('user');
     if (myScore) {
       friendsScores.push(myScore);
     }
