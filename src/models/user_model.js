@@ -19,6 +19,7 @@ const UserSchema = new Schema({
   qns_got_right: { type: Number, default: 0 },
   identifier: { type: String },
   notifications_token: { type: String },
+  follower_notifications_enabled: { type: Boolean, default: false },
 },
 {
   toObject: { virtuals: true },
