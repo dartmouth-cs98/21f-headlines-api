@@ -1,6 +1,8 @@
 import dotenv from 'dotenv';
 import User from '../models/user_model';
 
+const { Expo } = require('expo-server-sdk');
+
 dotenv.config({ silent: true });
 
 // Allow us to grab a user based on their mongo id or firebase id or username
@@ -85,6 +87,23 @@ export const postUser = async (data) => {
   }
 };
 
+export const sendNotificationsExpo = async (expo, messages) => {
+  console.log('send notifications expo');
+  const chunks = expo.chunkPushNotifications(messages);
+  const tickets = [];
+  // eslint-disable-next-line no-restricted-syntax
+  for (const chunk of chunks) {
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      const ticketChunk = await expo.sendPushNotificationsAsync(chunk);
+      tickets.push(...ticketChunk);
+    } catch (error) {
+      console.error('error sending notifications', error);
+    }
+  }
+  return tickets;
+};
+
 export const updateUser = async (id, fields, remove) => {
   try {
     const options = { new: true };
@@ -119,6 +138,32 @@ export const updateUser = async (id, fields, remove) => {
           .findByIdAndUpdate(id, { $addToSet: update }, options)
           .populate('following', 'username')
           .populate('followers', 'username');
+
+        console.log('about to try to send a notification');
+        // this means someone is following us and we're not removing them
+        // give a notification that someone is following us
+
+        // check if the user signed up for friend notifications
+        // if (user.data.follower_notifications_enabled) {
+        const expoToken = user.data.notifications_token;
+        console.log(expoToken);
+        const expo = new Expo();
+        const messages = [];
+        // from https://farazpatankar.com/push-notifications-in-react-native/
+        if (!Expo.isExpoPushToken(expoToken)) {
+          console.log(`Push token ${expoToken} is not a valid Expo push token`);
+        }
+        messages.push({
+          to: expoToken,
+          title: 'Somebody just followed you on Headlines!',
+        });
+
+        try {
+          this.sendNotificationsExpo(expo, messages);
+        } catch (error) {
+          console.log('error', error);
+        }
+        // }
       }
       return user;
     } else { // else we are updating any other fields
