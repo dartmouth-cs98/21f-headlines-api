@@ -8,7 +8,7 @@ const UserSchema = new Schema({
   firebaseID: { type: String, unique: true, default: '' },
   following: { type: [{ type: Schema.Types.ObjectId, ref: 'User' }], default: [] },
   followers: { type: [{ type: Schema.Types.ObjectId, ref: 'User' }], default: [] },
-  days_played: { type: [Date], default: [] },
+  days_played: { type: Number, default: 0 },
   current_streak: { type: Number, default: 0 },
   longest_streak: { type: Number, default: 0 },
   reliability_score: { type: Number, default: 0 },
@@ -19,6 +19,7 @@ const UserSchema = new Schema({
   qns_got_right: { type: Number, default: 0 },
   identifier: { type: String },
   notifications_token: { type: String },
+  follower_notifications_enabled: { type: Boolean, default: false },
 },
 {
   toObject: { virtuals: true },
