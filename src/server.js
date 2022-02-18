@@ -7,11 +7,8 @@ import mongoose from 'mongoose';
 import apiRouter from './router';
 
 // // DB Setup
-// const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost/headlines';
+const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost/headlines';
 
-// for testing
-// const mongoURI = 'mongodb+srv://headlines_user:e202R1PXHho11bIU@cluster0.vapw9.mongodb.net/test?retryWrites=true&w=majority';
-const mongoURI = 'mongodb+srv://headlines_user:e202R1PXHho11bIU@cluster0.vapw9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
 const decodeIDToken = require('./authenticateToken');
 
 mongoose.connect(mongoURI).then(() => {

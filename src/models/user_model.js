@@ -3,8 +3,12 @@ import mongoose, { Schema } from 'mongoose';
 const UserSchema = new Schema({
   username: { type: String, unique: true, default: '' },
   fullName: { type: String, unique: false, default: '' },
-  phone: { type: String, unique: true, default: '' },
-  unformattedPhone: { type: String, unique: true, default: '' },
+  phone: {
+    type: String, unique: true, default: '', select: false,
+  },
+  unformattedPhone: {
+    type: String, unique: true, default: '', select: false,
+  },
   firebaseID: { type: String, unique: true, default: '' },
   following: { type: [{ type: Schema.Types.ObjectId, ref: 'User' }], default: [] },
   followers: { type: [{ type: Schema.Types.ObjectId, ref: 'User' }], default: [] },
