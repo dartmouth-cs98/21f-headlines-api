@@ -251,7 +251,7 @@ router.route('/users')
   .get(async (req, res) => {
     try {
       if (req.currentUser) {
-        const users = await Users.getUsers(req.query.term);
+        const users = await Users.getUsers(req.query.term, req.query.id);
         res.json(users);
       } else {
         res.status(401).send('Not Authenticated');
@@ -280,7 +280,7 @@ router.route('/users/contacts')
   .post(async (req, res) => {
     try {
       if (req.currentUser) {
-        const users = await Users.getContacts(req.body.phoneNumbers);
+        const users = await Users.getContacts(req.body.phoneNumbers, req.query.id);
         res.json(users);
       } else {
         res.status(401).send('Not Authenticated');

@@ -32,11 +32,11 @@ export const getUser = async (mongoid = null, firebaseId = null, username = null
   }
 };
 
-export const getUsers = async (searchTerm) => {
+export const getUsers = async (searchTerm, id) => {
   try {
     // option i is to ignore case sensitivity
     const users = await User
-      .find({ username: { $regex: `^${searchTerm}`, $options: 'i' } }).limit(10)
+      .find({ _id: { $nin: [id] }, username: { $regex: `^${searchTerm}`, $options: 'i' } }).limit(10)
       .populate('following', 'username')
       .populate('followers', 'username');
     return users;
@@ -45,11 +45,11 @@ export const getUsers = async (searchTerm) => {
   }
 };
 
-export const getContacts = async (phoneNumbers) => {
+export const getContacts = async (phoneNumbers, id) => {
   try {
     // we are matching unformattedPhone (aka no country code)
     const users = await User
-      .find({ unformattedPhone: { $in: phoneNumbers } })
+      .find({ _id: { $nin: [id] }, unformattedPhone: { $in: phoneNumbers } })
       .populate('following', 'username')
       .populate('followers', 'username');
     return users;
