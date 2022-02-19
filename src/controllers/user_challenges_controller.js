@@ -3,6 +3,10 @@ import * as User from './user_controller';
 import { getStartEndDate } from '../helpers/helpers';
 
 export const createUserChallenge = async (challenge) => {
+
+  const alreadyPlayed = await getUserChallenges(challenge.user_id, challenge.date, 1);
+  if (alreadyPlayed.length > 0) return 'user already played';
+
   const userChallenge = new UserChallenge();
   userChallenge.date = challenge.date;
   userChallenge.user = challenge.user_id;
