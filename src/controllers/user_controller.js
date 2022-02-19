@@ -145,7 +145,7 @@ export const updateUser = async (id, fields, remove) => {
 
         // check if the user signed up for friend notifications
         // if (user.data.follower_notifications_enabled) {
-        const expoToken = user.data.notifications_token;
+        const expoToken = user.notifications_token;
         console.log(expoToken);
         const expo = new Expo();
         const messages = [];
