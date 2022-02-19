@@ -2,21 +2,6 @@ import UserChallenge from '../models/user_challenges_model';
 import * as User from './user_controller';
 import { getStartEndDate } from '../helpers/helpers';
 
-export const createUserChallenge = async (challenge) => {
-  const userChallenge = new UserChallenge();
-  userChallenge.date = challenge.date;
-  userChallenge.user = challenge.user_id;
-  userChallenge.number_correct = challenge.number_correct;
-  userChallenge.seconds_taken = challenge.seconds_taken;
-
-  try {
-    const savedChallenge = await userChallenge.save();
-    return savedChallenge.id;
-  } catch (error) {
-    throw new Error(`unable to save user challenge: ${error}`);
-  }
-};
-
 // Returns global top user challenges from a certain date
 export const getTopUserChallenges = async (date, num = 10) => {
   try {
@@ -42,6 +27,24 @@ export const getUserChallenges = async (id, date, daysBack) => {
     return challenges;
   } catch (error) {
     throw new Error(`get daily challenge error: ${error}`);
+  }
+};
+
+export const createUserChallenge = async (challenge) => {
+  const alreadyPlayed = await getUserChallenges(challenge.user_id, challenge.date, 1);
+  if (alreadyPlayed.length > 0) return 'user already played';
+
+  const userChallenge = new UserChallenge();
+  userChallenge.date = challenge.date;
+  userChallenge.user = challenge.user_id;
+  userChallenge.number_correct = challenge.number_correct;
+  userChallenge.seconds_taken = challenge.seconds_taken;
+
+  try {
+    const savedChallenge = await userChallenge.save();
+    return savedChallenge.id;
+  } catch (error) {
+    throw new Error(`unable to save user challenge: ${error}`);
   }
 };
 
