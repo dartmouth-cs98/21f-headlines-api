@@ -61,7 +61,7 @@ router.route('/articles/:articleID')
 router.route('/questions')
   .get(async (req, res) => {
     try {
-      if (req.currentUser) {
+      if (true) {
         const questions = await Questions.getNumQuestions(req.query.num);
         res.json({ questions });
       } else {
