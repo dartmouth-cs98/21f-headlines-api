@@ -6,7 +6,7 @@ import morgan from 'morgan';
 import mongoose from 'mongoose';
 import apiRouter from './router';
 
-// // DB Setup
+// DB Setup
 const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost/headlines';
 
 const decodeIDToken = require('./authenticateToken');
