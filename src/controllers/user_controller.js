@@ -123,6 +123,7 @@ export const updateUser = async (id, fields, remove) => {
     } else if (fields.followed) { // someone is following us
       const update = { followers: { $each: [fields.followed] } };
       let user;
+      let followedUser;
       if (remove === 'true') {
         console.log(`Trying to remove a user ${remove}`);
         console.log(fields);
@@ -135,6 +136,8 @@ export const updateUser = async (id, fields, remove) => {
           .findByIdAndUpdate(id, { $addToSet: update }, options)
           .populate('following', 'username')
           .populate('followers', 'username');
+        followedUser = await User
+          .findById(fields.followed);
 
         // check if the user signed up for friend notifications
         if (user.follower_notifications_enabled) {
@@ -142,13 +145,14 @@ export const updateUser = async (id, fields, remove) => {
           console.log(expoToken);
           const expo = new Expo();
           const messages = [];
+          console.log(followedUser.username);
           // from https://farazpatankar.com/push-notifications-in-react-native/
           if (!Expo.isExpoPushToken(expoToken)) {
             console.log(`Push token ${expoToken} is not a valid Expo push token`);
           }
           messages.push({
             to: expoToken,
-            title: `${fields.followed} just followed you on Headlines!`,
+            title: `${followedUser.username} just followed you on Headlines!`,
           });
 
           try {
