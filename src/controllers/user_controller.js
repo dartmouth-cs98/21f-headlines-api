@@ -148,7 +148,7 @@ export const updateUser = async (id, fields, remove) => {
           }
           messages.push({
             to: expoToken,
-            title: 'Somebody just followed you on Headlines!',
+            title: `${fields.followed} just followed you on Headlines!`,
           });
 
           try {
