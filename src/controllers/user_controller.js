@@ -87,23 +87,6 @@ export const postUser = async (data) => {
   }
 };
 
-export const sendNotificationsExpo = async (expo, messages) => {
-  console.log('send notifications expo');
-  const chunks = expo.chunkPushNotifications(messages);
-  const tickets = [];
-  // eslint-disable-next-line no-restricted-syntax
-  for (const chunk of chunks) {
-    try {
-      // eslint-disable-next-line no-await-in-loop
-      const ticketChunk = await expo.sendPushNotificationsAsync(chunk);
-      tickets.push(...ticketChunk);
-    } catch (error) {
-      console.error('error sending notifications', error);
-    }
-  }
-  return tickets;
-};
-
 export const updateUser = async (id, fields, remove) => {
   try {
     const options = { new: true };
@@ -159,7 +142,19 @@ export const updateUser = async (id, fields, remove) => {
         });
 
         try {
-          this.sendNotificationsExpo(expo, messages);
+          console.log('send notifications expo');
+          const chunks = expo.chunkPushNotifications(messages);
+          const tickets = [];
+          // eslint-disable-next-line no-restricted-syntax
+          for (const chunk of chunks) {
+            try {
+              // eslint-disable-next-line no-await-in-loop
+              const ticketChunk = await expo.sendPushNotificationsAsync(chunk);
+              tickets.push(...ticketChunk);
+            } catch (error) {
+              console.error('error sending notifications', error);
+            }
+          }
         } catch (error) {
           console.log('error', error);
         }
