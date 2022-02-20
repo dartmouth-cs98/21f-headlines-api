@@ -56,11 +56,9 @@ export const getUserFriendChallenges = async (id, date) => {
     // used this: https://stackoverflow.com/questions/15102532/mongo-find-through-list-of-ids
     const user = await User.getUser(id);
     const followingIds = user.following;
+    // add the user's id so they show up too
+    followingIds.push(id);
     const friendsScores = await UserChallenge.find({ user: { $in: followingIds }, date: { $gte: start, $lt: end } }).sort({ number_correct: -1, seconds_taken: 1 }).populate('user');
-    const myScore = await UserChallenge.findOne({ user: id, date: { $gte: start, $lt: end } }).populate('user');
-    if (myScore) {
-      friendsScores.push(myScore);
-    }
     return friendsScores;
   } catch (error) {
     throw new Error(`get user friend challenges error: ${error}`);
