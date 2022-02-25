@@ -24,7 +24,7 @@ const UserSchema = new Schema({
   identifier: { type: String, default: 'first_time' },
   notifications_token: { type: String },
   follower_notifications_enabled: { type: Boolean, default: true },
-  last_day_played: { type: Date, default: new Date(2022, 1, 1) },
+  last_day_played: { type: Date, default: null },
   qns_accepted: { type: Number, default: 0 },
 },
 {
