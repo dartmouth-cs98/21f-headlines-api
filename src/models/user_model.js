@@ -21,9 +21,9 @@ const UserSchema = new Schema({
   qns_submitted: { type: Number, default: 0 },
   qns_rated: { type: Number, default: 0 },
   qns_got_right: { type: Number, default: 0 },
-  identifier: { type: String, default: '' },
+  identifier: { type: String, default: 'first_time' },
   notifications_token: { type: String },
-  follower_notifications_enabled: { type: Boolean, default: false },
+  follower_notifications_enabled: { type: Boolean, default: true },
 },
 {
   toObject: { virtuals: true },
