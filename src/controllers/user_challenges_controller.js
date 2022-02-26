@@ -39,6 +39,7 @@ export const createUserChallenge = async (challenge) => {
   userChallenge.user = challenge.user_id;
   userChallenge.number_correct = challenge.number_correct;
   userChallenge.seconds_taken = challenge.seconds_taken;
+  userChallenge.day_of = challenge.day_of;
 
   try {
     const savedChallenge = await userChallenge.save();
