@@ -58,7 +58,7 @@ export const getQuestionsToCheck = async (filters, num = 10) => {
     newFilters.in_daily_quiz = null;
   }
 
-  const res = await Question.find(newFilters).limit(parseInt(num, 10));
+  const res = await Question.find(newFilters).limit(parseInt(num, 10)).populate('user', 'qns_accepted');
   return res;
 };
 
