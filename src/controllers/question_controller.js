@@ -13,6 +13,7 @@ export const createQuestion = async (articleId, qnInfo) => {
   qn.question_source = qnInfo.question_source;
   qn.manually_approved = qnInfo.manually_approved;
   qn.report = [];
+  qn.user = qnInfo.user;
   try {
     const savedQn = await qn.save();
     console.log(savedQn);
