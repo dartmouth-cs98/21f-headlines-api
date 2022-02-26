@@ -11,6 +11,7 @@ const QuestionSchema = new Schema({
   approved_status: { type: String, default: 'undetermined' },
   in_daily_quiz: { type: Schema.Types.ObjectId, ref: 'DailyChallenge', default: null },
   report: [String],
+  user: { type: Schema.Types.ObjectId, ref: 'User', default: null },
 },
 {
   toObject: { virtuals: true },
