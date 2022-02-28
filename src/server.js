@@ -6,18 +6,10 @@ import morgan from 'morgan';
 import mongoose from 'mongoose';
 import apiRouter from './router';
 
-<<<<<<< HEAD
-// // DB Setup
-//const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost/headlines';
-
-// for testing
-// const mongoURI = 'mongodb+srv://headlines_user:e202R1PXHho11bIU@cluster0.vapw9.mongodb.net/test?retryWrites=true&w=majority';
-const mongoURI = 'mongodb+srv://headlines_user:e202R1PXHho11bIU@cluster0.vapw9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
-=======
 // DB Setup
 const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost/headlines';
 
->>>>>>> 24b112dea457b3b4ec0187f4045ac9a5f9cf4a26
+// const mongoURI = 'mongodb+srv://headlines_user:e202R1PXHho11bIU@cluster0.vapw9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
 const decodeIDToken = require('./authenticateToken');
 
 mongoose.connect(mongoURI).then(() => {
