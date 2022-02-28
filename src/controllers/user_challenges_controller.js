@@ -43,7 +43,7 @@ export const createUserChallenge = async (challenge) => {
 
   try {
     const savedChallenge = await userChallenge.save();
-    return savedChallenge.id;
+    return savedChallenge;
   } catch (error) {
     throw new Error(`unable to save user challenge: ${error}`);
   }
