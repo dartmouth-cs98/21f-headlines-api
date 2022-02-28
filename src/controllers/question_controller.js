@@ -13,8 +13,10 @@ export const createQuestion = async (articleId, qnInfo) => {
   qn.question_source = qnInfo.question_source;
   qn.manually_approved = qnInfo.manually_approved;
   qn.report = [];
+  qn.user = qnInfo.user;
   try {
     const savedQn = await qn.save();
+    console.log(savedQn);
     return savedQn.id;
   } catch (error) {
     throw new Error(`unable to create or add question to database: ${error}`);
@@ -33,9 +35,18 @@ export const getQuestions = async () => {
 export const getNumQuestions = async (num) => {
   // used this: https://stackoverflow.com/questions/2824157/random-record-from-mongodb
   // and this: https://stackoverflow.com/questions/33194825/find-objects-created-in-last-week-in-mongo/46906862
+  // this only returns questions that have been in a daily challenge
   const res = await Question.aggregate([
-    { $match: { createdAt: { $gte: new Date(new Date() - 7 * 60 * 60 * 24 * 1000) } } },
+    { $match: { in_daily_quiz: { $ne: null } } },
     { $sample: { size: parseInt(num, 10) } },
+    {
+      $lookup: {
+        from: 'dailychallenges',
+        localField: 'in_daily_quiz',
+        foreignField: '_id',
+        as: 'daily_challenge',
+      },
+    },
   ]);
   return res;
 };
@@ -48,7 +59,7 @@ export const getQuestionsToCheck = async (filters, num = 10) => {
     newFilters.in_daily_quiz = null;
   }
 
-  const res = await Question.find(newFilters).limit(parseInt(num, 10));
+  const res = await Question.find(newFilters).limit(parseInt(num, 10)).populate('user', 'qns_accepted');
   return res;
 };
 

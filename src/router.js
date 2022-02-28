@@ -79,12 +79,17 @@ router.route('/questions')
   // Unfortunately we can't authenticate this right now because the python calls these endpoints without being authenticated rn.
   .post(async (req, res) => {
     try {
-      const article = await Articles.getArticle(req.body.articleInfo);
-      const question = await Questions.createQuestion(article.id, req.body.question);
-      const qns = article.questions;
-      qns.push(question);
-      const updatedArticle = await Articles.updateArticle(article.id, { questions: qns });
-      res.json({ updatedArticle });
+      if (req.body.articleInfo) {
+        const article = await Articles.getArticle(req.body.articleInfo);
+        const question = await Questions.createQuestion(article.id, req.body.question);
+        const qns = article.questions;
+        qns.push(question);
+        const updatedArticle = await Articles.updateArticle(article.id, { questions: qns });
+        res.json({ updatedArticle });
+      } else {
+        const question = await Questions.createQuestion(null, req.body.question);
+        res.json(question);
+      }
     } catch (error) {
       res.status(422).send({ error: error.toString() });
     }
@@ -246,7 +251,7 @@ router.route('/users')
   .get(async (req, res) => {
     try {
       if (req.currentUser) {
-        const users = await Users.getUsers(req.query.term);
+        const users = await Users.getUsers(req.query.term, req.query.id);
         res.json(users);
       } else {
         res.status(401).send('Not Authenticated');
@@ -256,10 +261,8 @@ router.route('/users')
     }
   })
   .post(async (req, res) => {
-    console.log('post request made');
     try {
       if (req.currentUser) {
-      // console.log(req.body);
       // call postUser to create a new user with the given information. They do not need to be authenticated for this
         const user = await Users.postUser(req.body);
         res.json(user);
@@ -277,7 +280,7 @@ router.route('/users/contacts')
   .post(async (req, res) => {
     try {
       if (req.currentUser) {
-        const users = await Users.getContacts(req.body.phoneNumbers);
+        const users = await Users.getContacts(req.body.phoneNumbers, req.query.id);
         res.json(users);
       } else {
         res.status(401).send('Not Authenticated');
@@ -293,8 +296,8 @@ router.route('/users/:userID')
     try {
       console.log('Put from userID');
       if (req.currentUser) {
-        // Remember that query terms are strings not booleans
         const user = await Users.updateUser(req.params.userID, req.body, req.query.remove);
+        console.log(user);
         res.json(user);
       } else {
         res.status(401).send('Not Authenticated');
@@ -305,7 +308,6 @@ router.route('/users/:userID')
   }).get(async (req, res) => { // to get user info
     try {
       if (req.currentUser) {
-        console.log('getting user');
         let user;
         console.log(req.query);
         if (req.query.isFirebase === 'true') {
