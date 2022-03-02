@@ -6,9 +6,6 @@ import { getStartEndDate } from '../helpers/helpers';
 export const getTopUserChallenges = async (date, num = 10) => {
   try {
     const { start, end } = getStartEndDate(date);
-    console.log(`date: ${date}`);
-    console.log(start);
-    console.log(end);
     // used this: https://stackoverflow.com/questions/61178772/mongodb-how-to-find-the-10-largest-values-in-a-collection
     const challenge = await UserChallenge.find({ date: { $gte: start, $lt: end } }).sort({ number_correct: -1, seconds_taken: 1 }).limit(num).populate('user', 'username');
     return challenge;

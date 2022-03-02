@@ -62,8 +62,15 @@ router.route('/questions')
   .get(async (req, res) => {
     try {
       if (req.currentUser) {
-        const questions = await Questions.getNumQuestions(req.query.num);
-        res.json({ questions });
+        if (req.query.userId) {
+          // to get qns submitted by a particular user
+          const questions = await Questions.getUserQns(req.query.userId);
+          res.json(questions);
+        } else {
+          // other purposes such as qns for rating etc
+          const questions = await Questions.getNumQuestions(req.query.num);
+          res.json({ questions });
+        }
       } else {
         res.status(401).send('Not authorized');
       }
@@ -102,6 +109,18 @@ router.route('/questions/:questionID')
       if (req.currentUser) {
         const question = await Questions.updateQuestion(req.params.questionID, req.body.question);
         res.json(question);
+      } else {
+        res.status(401).send('Not Authenticated');
+      }
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  })
+  .get(async (req, res) => {
+    try {
+      if (req.currentUser) {
+        const question = await Questions.getQuestion(req.params.questionID);
+        res.json([question]);
       } else {
         res.status(401).send('Not Authenticated');
       }
@@ -271,7 +290,6 @@ router.route('/users')
       }
     } catch (error) {
       res.status(422).send({ error: error.toString() });
-      console.log(error.toString());
     }
   });
 
@@ -294,10 +312,8 @@ router.route('/users/contacts')
 router.route('/users/:userID')
   .put(async (req, res) => { // to update user info
     try {
-      console.log('Put from userID');
       if (req.currentUser) {
         const user = await Users.updateUser(req.params.userID, req.body, req.query.remove);
-        console.log(user);
         res.json(user);
       } else {
         res.status(401).send('Not Authenticated');
@@ -309,7 +325,6 @@ router.route('/users/:userID')
     try {
       if (req.currentUser) {
         let user;
-        console.log(req.query);
         if (req.query.isFirebase === 'true') {
           user = await Users.getUser(null, req.params.userID);
         } else {
@@ -350,7 +365,6 @@ router.get('/users/checkUsername/:attemptedUsername', async (req, res) => {
       res.json({ taken: false });
     }
   } catch (error) {
-    console.log(error);
     res.status(420).send({ error: error.toString() });
   }
 });
