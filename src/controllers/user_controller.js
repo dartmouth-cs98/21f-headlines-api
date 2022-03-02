@@ -146,6 +146,7 @@ export const updateUser = async (id, fields, remove) => {
           const expo = new Expo();
           const messages = [];
           console.log(followedUser.username);
+          const followedUsername = followedUser.username;
           // from https://farazpatankar.com/push-notifications-in-react-native/
           if (!Expo.isExpoPushToken(expoToken)) {
             console.log(`Push token ${expoToken} is not a valid Expo push token`);
@@ -153,7 +154,7 @@ export const updateUser = async (id, fields, remove) => {
           messages.push({
             to: expoToken,
             title: `${followedUser.username} just followed you on Headlines!`,
-            data: followedUser.username,
+            data: { followedUser: followedUsername },
           });
 
           try {
