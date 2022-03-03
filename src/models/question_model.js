@@ -12,7 +12,7 @@ const QuestionSchema = new Schema({
   in_daily_quiz: { type: Schema.Types.ObjectId, ref: 'DailyChallenge', default: null },
   report: [String],
   user: { type: Schema.Types.ObjectId, ref: 'User', default: null },
-  reviewer: { type: [{ type: Schema.Types.ObjectId, ref: 'User' }], default: [] }
+  reviewer: { type: [{ type: Schema.Types.ObjectId, ref: 'User' }], default: [] },
 },
 {
   toObject: { virtuals: true },

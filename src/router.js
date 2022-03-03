@@ -147,7 +147,7 @@ router.route('/adminQuestions')
 router.route('/rateQuestion')
   .get(async (req, res) => {
     try {
-      if (true) {
+      if (req.currentUser) {
         const question = await Questions.getQuestionsToRate(req.query, req.query.num);
         res.json(question);
       } else {

@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+// import { ObjectId } from 'bson';
 import Question from '../models/question_model';
 
 export const createQuestion = async (articleId, qnInfo) => {
@@ -42,7 +42,7 @@ export const getNumQuestions = async (num) => {
     { $match: { in_daily_quiz: { $ne: null } } },
     { $sample: { size: parseInt(num, 10) } },
     {
-      $lookup: {  
+      $lookup: {
         from: 'dailychallenges',
         localField: 'in_daily_quiz',
         foreignField: '_id',
@@ -57,8 +57,7 @@ export const getQuestionsToRate = async (id) => {
   // only returns questions that the user hasn't rated
   const filters = {};
   filters.approved_status = 'undetermined';
-  filters.reviewer = { $nin: [ObjectId(id)] };
-  
+  filters.reviewer = { $nin: [id] };
   const res = await Question.find(filters).limit(1);
   console.log(res);
   return res;
