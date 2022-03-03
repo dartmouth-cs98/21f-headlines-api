@@ -1,3 +1,4 @@
+// import { ObjectId } from 'bson';
 import Question from '../models/question_model';
 
 export const createQuestion = async (articleId, qnInfo) => {
@@ -77,7 +78,7 @@ export const rateQuestion = async (id, change) => {
 
 export const getQuestion = async (id) => {
   try {
-    const qn = await Question.findById(id).populate('article_ref');
+    const qn = await Question.findById(id).populate('user', 'qns_accepted');
     return qn;
   } catch (error) {
     throw new Error(`get question error: ${error}`);
@@ -100,5 +101,14 @@ export const updateQuestion = async (id, question) => {
     return qn;
   } catch (error) {
     throw new Error(`updating question error: ${error}`);
+  }
+};
+
+export const getUserQns = async (userId) => {
+  try {
+    const qns = await Question.find({ user: userId });
+    return qns;
+  } catch (error) {
+    throw new Error(`fetching user questions error: ${error}`);
   }
 };
