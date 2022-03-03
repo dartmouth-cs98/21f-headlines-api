@@ -143,6 +143,21 @@ router.route('/adminQuestions')
     }
   });
 
+// Endpoint for getting a question to rate
+router.route('/rateQuestion')
+  .get(async (req, res) => {
+    try {
+      if (req.currentUser) {
+        const question = await Questions.getQuestionsToRate(req.query, req.query.num);
+        res.json(question);
+      } else {
+        res.status(401).send('Not Authenticated');
+      }
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+
 // Endpoint for rating a question
 router.put('/rateQuestion/:questionId', async (req, res) => {
   try {

@@ -15,6 +15,7 @@ export const createQuestion = async (articleId, qnInfo) => {
   qn.manually_approved = qnInfo.manually_approved;
   qn.report = [];
   qn.user = qnInfo.user;
+  qn.reviewer = [];
   try {
     const savedQn = await qn.save();
     console.log(savedQn);
@@ -49,6 +50,16 @@ export const getNumQuestions = async (num) => {
       },
     },
   ]);
+  return res;
+};
+
+export const getQuestionsToRate = async (id) => {
+  // only returns questions that the user hasn't rated
+  const filters = {};
+  filters.approved_status = 'undetermined';
+  filters.reviewer = { $nin: [id] };
+  const res = await Question.find(filters).limit(1);
+  console.log(res);
   return res;
 };
 
