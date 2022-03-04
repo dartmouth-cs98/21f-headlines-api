@@ -148,7 +148,7 @@ router.route('/rateQuestion')
   .get(async (req, res) => {
     try {
       if (req.currentUser) {
-        const question = await Questions.getQuestionsToRate(req.query, req.query.num);
+        const question = await Questions.getQuestionsToRate(req.query.id);
         res.json(question);
       } else {
         res.status(401).send('Not Authenticated');

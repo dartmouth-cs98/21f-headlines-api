@@ -1,4 +1,4 @@
-// import { ObjectId } from 'bson';
+import { ObjectId } from 'bson';
 import Question from '../models/question_model';
 
 export const createQuestion = async (articleId, qnInfo) => {
@@ -54,12 +54,37 @@ export const getNumQuestions = async (num) => {
 };
 
 export const getQuestionsToRate = async (id) => {
+  // eslint-disable-next-line new-cap
+  const objectID = ObjectId(id);
   // only returns questions that the user hasn't rated
-  const filters = {};
-  filters.approved_status = 'undetermined';
-  filters.reviewer = { $nin: [id] };
-  const res = await Question.find(filters).limit(1);
-  console.log(res);
+  //  queries for questions that have not been added to a quiz
+  //  and that have not been reviewed by that person already
+  const res = await Question.aggregate([
+    {
+      $match: {
+        $and: [
+          {
+            $or: [
+              { reviewer: { $exists: false } },
+              {
+                $and: [
+                  { reviewer: { $nin: [objectID] } },
+                  { reviewer: { $exists: true } },
+                ],
+              },
+            ],
+          },
+          {
+            $or: [
+              { in_daily_quiz: null },
+              { in_daily_quiz: { $exists: false } },
+            ],
+          },
+        ],
+      },
+    },
+    { $sample: { size: 1 } },
+  ]);
   return res;
 };
 
