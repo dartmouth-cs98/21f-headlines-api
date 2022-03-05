@@ -369,8 +369,6 @@ router.route('/users/exists/:userID')
       } else {
         res.json({ exists: false });
       }
-
-    // Get user throws error if user doesn't exists.
     } catch (error) {
       res.status(420).send({ error: error.toString() });
     }
