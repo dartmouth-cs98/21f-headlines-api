@@ -233,8 +233,8 @@ router.route('/userChallenges')
   .post(async (req, res) => {
     try {
       if (req.currentUser) {
-        const challengeId = await UserChallenge.createUserChallenge(req.body.challenge);
-        res.json(challengeId);
+        const challenge = await UserChallenge.createUserChallenge(req.body.challenge);
+        res.json(challenge);
       } else {
         res.status(401).send('Not Authenticated');
       }
