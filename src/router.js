@@ -63,9 +63,15 @@ router.route('/questions')
     try {
       if (req.currentUser) {
         if (req.query.userId) {
-          // to get qns submitted by a particular user
-          const questions = await Questions.getUserQns(req.query.userId);
-          res.json(questions);
+          if (req.query.accepted) {
+            // to get all accepted qns submitted by a particular user
+            const questions = await Questions.getAcceptedUserQns(req.query.userId);
+            res.json(questions);
+          } else {
+            // to get all qns submitted by a particular user
+            const questions = await Questions.getUserQns(req.query.userId);
+            res.json(questions);
+          }
         } else {
           // other purposes such as qns for rating etc
           const questions = await Questions.getNumQuestions(req.query.num);
@@ -134,21 +140,6 @@ router.route('/adminQuestions')
     try {
       if (req.currentUser) {
         const question = await Questions.getQuestionsToCheck(req.query, req.query.num);
-        res.json(question);
-      } else {
-        res.status(401).send('Not Authenticated');
-      }
-    } catch (error) {
-      res.status(422).send({ error: error.toString() });
-    }
-  });
-
-// Endpoint for getting a question to rate
-router.route('/rateQuestion')
-  .get(async (req, res) => {
-    try {
-      if (req.currentUser) {
-        const question = await Questions.getQuestionsToRate(req.query, req.query.num);
         res.json(question);
       } else {
         res.status(401).send('Not Authenticated');
@@ -227,8 +218,8 @@ router.route('/userChallenges')
   .post(async (req, res) => {
     try {
       if (req.currentUser) {
-        const challenge = await UserChallenge.createUserChallenge(req.body.challenge);
-        res.json(challenge);
+        const challengeId = await UserChallenge.createUserChallenge(req.body.challenge);
+        res.json(challengeId);
       } else {
         res.status(401).send('Not Authenticated');
       }
@@ -363,8 +354,10 @@ router.route('/users/exists/:userID')
       } else {
         res.json({ exists: false });
       }
+
+    // Get user throws error if user doesn't exists.
     } catch (error) {
-      res.status(420).send({ error: error.toString() });
+      res.json({ exists: false });
     }
   });
 
