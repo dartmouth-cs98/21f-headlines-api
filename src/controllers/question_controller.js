@@ -123,3 +123,12 @@ export const getUserQns = async (userId) => {
     throw new Error(`fetching user questions error: ${error}`);
   }
 };
+
+export const getAcceptedUserQns = async (userId) => {
+  try {
+    const qns = await Question.find({ user: userId, approved_status: 'approved' });
+    return qns;
+  } catch (error) {
+    throw new Error(`fetching user questions error: ${error}`);
+  }
+};

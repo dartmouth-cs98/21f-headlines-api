@@ -63,9 +63,15 @@ router.route('/questions')
     try {
       if (req.currentUser) {
         if (req.query.userId) {
-          // to get qns submitted by a particular user
-          const questions = await Questions.getUserQns(req.query.userId);
-          res.json(questions);
+          if (req.query.accepted) {
+            // to get all accepted qns submitted by a particular user
+            const questions = await Questions.getAcceptedUserQns(req.query.userId);
+            res.json(questions);
+          } else {
+            // to get all qns submitted by a particular user
+            const questions = await Questions.getUserQns(req.query.userId);
+            res.json(questions);
+          }
         } else {
           // other purposes such as qns for rating etc
           const questions = await Questions.getNumQuestions(req.query.num);
