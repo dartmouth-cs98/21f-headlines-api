@@ -80,6 +80,12 @@ export const getQuestionsToRate = async (id) => {
               { in_daily_quiz: { $exists: false } },
             ],
           },
+          {
+            $or: [
+              { approved_status: 'undetermined' },
+              { approved_status: { $exists: false } },
+            ],
+          },
         ],
       },
     },
