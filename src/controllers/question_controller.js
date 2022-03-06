@@ -83,7 +83,7 @@ export const getQuestionsToRate = async (id) => {
           {
             $or: [
               { approved_status: 'undetermined' },
-              { approved_status: { $exists: false } }
+              { approved_status: { $exists: false } },
             ],
           },
         ],
