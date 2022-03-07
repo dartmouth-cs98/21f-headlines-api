@@ -1,8 +1,8 @@
 import mongoose, { Schema } from 'mongoose';
 
 const ArchiveQuestionSchema = new Schema({
-  questionId: [{ type: Schema.Types.ObjectId, ref: 'Question' }],
-  userId: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  questionId: { type: Schema.Types.ObjectId, ref: 'Question' },
+  userId: { type: Schema.Types.ObjectId, ref: 'User' },
 },
 {
   toObject: { virtuals: true },
