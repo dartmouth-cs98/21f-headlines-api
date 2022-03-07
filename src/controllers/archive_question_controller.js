@@ -3,8 +3,8 @@ import ArchiveQuestion from '../models/archive_question_model';
 
 export const createArchiveQuestion = async (userId, questionId) => {
   const aqn = new ArchiveQuestion();
-  aqn.user_id = userId;
-  aqn.question_id = questionId;
+  aqn.userId = userId;
+  aqn.questionId = questionId;
   try {
     const savedAqn = await aqn.save();
     console.log(savedAqn);
