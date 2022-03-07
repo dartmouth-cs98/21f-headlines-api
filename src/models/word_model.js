@@ -2,7 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 
 const WordSchema = new Schema({
   date: Date,
-  word: String
+  word: String,
 },
 {
   toObject: { virtuals: true },

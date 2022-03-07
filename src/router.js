@@ -402,7 +402,7 @@ router.route('/words')
       res.status(422).send({ error: error.toString() });
     }
   })
-  .get(async (req, res) => { 
+  .get(async (req, res) => {
     try {
       if (req.currentUser) {
         const word = await Word.getWord(req.query.date);
