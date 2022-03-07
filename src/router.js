@@ -65,6 +65,7 @@ router.route('/questions')
     try {
       if (req.currentUser) {
         if (req.query.userId && req.query.num) {
+          console.log('in get num questions for user');
           const questions = await Questions.getNumQuestionsForUser(req.query.num, req.query.userId);
           res.json({ questions });
         } else if (req.query.userId) {
