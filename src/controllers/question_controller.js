@@ -53,6 +53,46 @@ export const getNumQuestions = async (num) => {
   return res;
 };
 
+// create a new version of getNumQuestions which only returns questions that have been in a daily challenge
+// and which the given user has never seen (doesn't exist as archive question)
+// when you call this, you should then check if the returned list is empty
+// if it is, then you should call the clear questions thing and then call it again
+export const getNumQuestionsForUser = async (num, userId) => {
+  // used this: https://stackoverflow.com/questions/2824157/random-record-from-mongodb
+  // and this: https://stackoverflow.com/questions/33194825/find-objects-created-in-last-week-in-mongo/46906862
+  // this only returns questions that have been in a daily challenge
+  const res = await Question.aggregate([
+    {
+      $lookup: {
+        from: 'dailychallenges',
+        localField: 'in_daily_quiz',
+        foreignField: '_id',
+        as: 'daily_challenge',
+      },
+      // eslint-disable-next-line no-dupe-keys
+      $lookup: {
+        from: 'archivequestions',
+        localField: '_id',
+        foreignField: 'questionId',
+        as: 'archivequestion',
+      },
+      $and: [
+        { $match: { in_daily_quiz: { $ne: null } } },
+        {
+          $or: [
+            { $match: { 'archivequestion.userId': { $ne: userId } } },
+            // there's a question that's not in the archive question model at all
+            { _id: { $nin: ['archivequestion.questionId'] } },
+            console.log('archivequestion.questionId'),
+          ],
+        },
+      ],
+    },
+    { $sample: { size: parseInt(num, 10) } },
+  ]);
+  return res;
+};
+
 export const getQuestionsToRate = async (id) => {
   // eslint-disable-next-line new-cap
   const objectID = ObjectId(id);
