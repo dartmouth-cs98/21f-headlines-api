@@ -4,6 +4,7 @@ import * as Questions from './controllers/question_controller';
 import * as Users from './controllers/user_controller';
 import * as DailyChallenge from './controllers/daily_challenges_controller';
 import * as UserChallenge from './controllers/user_challenges_controller';
+import * as Word from './controllers/word_controller';
 
 const router = Router();
 
@@ -387,4 +388,31 @@ router.get('/users/checkUsername/:attemptedUsername', async (req, res) => {
     res.status(420).send({ error: error.toString() });
   }
 });
+
+router.route('/words')
+  .post(async (req, res) => {
+    try {
+      if (req.currentUser) {
+        const wordId = await Word.createWord(req.body.word);
+        res.json(wordId);
+      } else {
+        res.status(401).send('Not Authenticated');
+      }
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  })
+  .get(async (req, res) => {
+    try {
+      if (req.currentUser) {
+        const word = await Word.getWord(req.query.date);
+        res.json(word);
+      } else {
+        res.status(401).send('Not Authenticated');
+      }
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  });
+
 export default router;
