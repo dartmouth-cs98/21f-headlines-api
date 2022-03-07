@@ -7,7 +7,7 @@ export const createWord = async (word) => {
   newWord.word = word.word;
 
   try {
-    const savedWord = await word.save();
+    const savedWord = await newWord.save();
     return savedWord.id;
   } catch (error) {
     throw new Error(`unable to save word: ${error}`);
