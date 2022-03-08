@@ -72,14 +72,14 @@ export const getNumQuestionsForUser = async (num, userId) => {
     // },
     { $match: { in_daily_quiz: { $ne: null } } },
     { $sample: { size: parseInt(num, 10) } },
-    {
-      $lookup: {
-        from: 'archivequestions',
-        localField: '_id',
-        foreignField: 'questionId',
-        as: 'archivequestion',
-      },
-    },
+    // {
+    //   $lookup: {
+    //     from: 'archivequestions',
+    //     localField: '_id',
+    //     foreignField: 'questionId',
+    //     as: 'archivequestion',
+    //   },
+    // },
     {
       // eslint-disable-next-line no-dupe-keys
       $lookup: {
