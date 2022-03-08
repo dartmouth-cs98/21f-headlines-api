@@ -79,6 +79,7 @@ export const getNumQuestionsForUser = async (num, userId) => {
         as: 'archivequestion',
       },
     },
+    { $match: { 'archivequestion.userId': { $ne: userId } } },
     // {
     //   // eslint-disable-next-line no-dupe-keys
     //   $lookup: {
