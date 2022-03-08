@@ -63,6 +63,7 @@ export const getNumQuestionsForUser = async (num, userId) => {
   // this only returns questions that have been in a daily challenge
   const res = await Question.aggregate([
     console.log('aggregating questions for archive mode'),
+    { $match: { in_daily_quiz: { $ne: null } } },
     {
       $lookup: {
         from: 'dailychallenges',
@@ -77,18 +78,18 @@ export const getNumQuestionsForUser = async (num, userId) => {
         foreignField: 'questionId',
         as: 'archivequestion',
       },
-      $and: [
-        { $match: { in_daily_quiz: { $ne: null } } },
-        {
-          $or: [
-            { $match: { 'archivequestion.userId': { $ne: userId } } },
-            // there's a question that's not in the archive question model at all
-            // { _id: { $nin: ['archivequestion.questionId'] } },
-            console.log('archive question question id'),
-            console.log('archivequestion.questionId'),
-          ],
-        },
-      ],
+      // $and: [
+      //   { $match: { in_daily_quiz: { $ne: null } } },
+      //   {
+      //     $or: [
+      //       { $match: { 'archivequestion.userId': { $ne: userId } } },
+      //       // there's a question that's not in the archive question model at all
+      //       // { _id: { $nin: ['archivequestion.questionId'] } },
+      //       console.log('archive question question id'),
+      //       console.log('archivequestion.questionId'),
+      //     ],
+      //   },
+      // ],
     },
     console.log('end of aggregation'),
     { $sample: { size: parseInt(num, 10) } },
