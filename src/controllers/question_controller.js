@@ -79,6 +79,8 @@ export const getNumQuestionsForUser = async (num, userId) => {
         foreignField: 'questionId',
         as: 'archivequestion',
       },
+    },
+    {
       // eslint-disable-next-line no-dupe-keys
       $lookup: {
         from: 'dailychallenges',
