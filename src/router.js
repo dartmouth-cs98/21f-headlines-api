@@ -64,7 +64,9 @@ router.route('/questions')
   .get(async (req, res) => {
     try {
       if (req.currentUser) {
-        if (req.query.userId && req.query.num) {
+        if (req.query.clear && req.query.userId) {
+          await Questions.clearArchiveQuestions(req.query.userId);
+        } else if (req.query.userId && req.query.num) {
           console.log('in get num questions for user');
           const questions = await Questions.getNumQuestionsForUser(req.query.num, req.query.userId);
           res.json({ questions });

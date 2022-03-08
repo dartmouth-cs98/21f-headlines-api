@@ -91,6 +91,15 @@ export const getNumQuestionsForUser = async (num, userId) => {
   return res;
 };
 
+export const clearArchiveQuestions = async (userId) => {
+  // eslint-disable-next-line new-cap
+  const userObjectId = ObjectId(userId);
+  const res = await Question.updateMany([
+    { $pull: { archive_mode: { User: userObjectId } } },
+  ]);
+  return res;
+};
+
 export const getQuestionsToRate = async (id) => {
   // eslint-disable-next-line new-cap
   const objectID = ObjectId(id);
