@@ -98,9 +98,9 @@ router.route('/questions')
   // Unfortunately we can't authenticate this right now because the python calls these endpoints without being authenticated rn.
   .post(async (req, res) => {
     try {
-      if (req.query.clear && req.query.userId) {
+      if (req.body.clear && req.body.userId) {
         console.log('calling clear archive questions now');
-        await Questions.clearArchiveQuestions(req.query.userId);
+        await Questions.clearArchiveQuestions(req.body.userId);
       } else if (req.body.articleInfo) {
         const article = await Articles.getArticle(req.body.articleInfo);
         const question = await Questions.createQuestion(article.id, req.body.question);
