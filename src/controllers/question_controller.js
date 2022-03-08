@@ -64,12 +64,12 @@ export const getNumQuestionsForUser = async (num, userId) => {
   const res = await Question.aggregate([
     console.log('aggregating questions for archive mode'),
     {
-      $lookup: {
-        from: 'dailychallenges',
-        localField: 'in_daily_quiz',
-        foreignField: '_id',
-        as: 'daily_challenge',
-      },
+      // $lookup: {
+      //   from: 'dailychallenges',
+      //   localField: 'in_daily_quiz',
+      //   foreignField: '_id',
+      //   as: 'daily_challenge',
+      // },
       // eslint-disable-next-line no-dupe-keys
       $lookup: {
         from: 'archivequestions',
