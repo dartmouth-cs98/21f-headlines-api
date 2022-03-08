@@ -118,7 +118,7 @@ router.route('/questions')
       console.log('trying to clear archive questions');
       if (req.query.userId) {
         console.log('calling clear archive questions now');
-        await Questions.clearArchiveQuestions(req.body.userId);
+        await Questions.clearArchiveQuestions(req.query.userId);
       }
     } catch (error) {
       res.status(422).send({ error: error.toString() });
