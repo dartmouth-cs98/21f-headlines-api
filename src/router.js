@@ -98,10 +98,7 @@ router.route('/questions')
   // Unfortunately we can't authenticate this right now because the python calls these endpoints without being authenticated rn.
   .post(async (req, res) => {
     try {
-      if (req.body.clear && req.body.userId) {
-        console.log('calling clear archive questions now');
-        await Questions.clearArchiveQuestions(req.body.userId);
-      } else if (req.body.articleInfo) {
+      if (req.body.articleInfo) {
         const article = await Articles.getArticle(req.body.articleInfo);
         const question = await Questions.createQuestion(article.id, req.body.question);
         const qns = article.questions;
@@ -111,6 +108,16 @@ router.route('/questions')
       } else {
         const question = await Questions.createQuestion(null, req.body.question);
         res.json(question);
+      }
+    } catch (error) {
+      res.status(422).send({ error: error.toString() });
+    }
+  })
+  .put(async (req, res) => {
+    try {
+      if (req.query.userId) {
+        console.log('calling clear archive questions now');
+        await Questions.clearArchiveQuestions(req.body.userId);
       }
     } catch (error) {
       res.status(422).send({ error: error.toString() });
