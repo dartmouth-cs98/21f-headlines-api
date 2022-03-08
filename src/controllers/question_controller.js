@@ -83,7 +83,7 @@ export const getNumQuestionsForUser = async (num, userId) => {
           $or: [
             { $match: { 'archivequestion.userId': { $ne: userId } } },
             // there's a question that's not in the archive question model at all
-            { _id: { $nin: ['archivequestion.questionId'] } },
+            // { _id: { $nin: ['archivequestion.questionId'] } },
             console.log('archive question question id'),
             console.log('archivequestion.questionId'),
           ],
