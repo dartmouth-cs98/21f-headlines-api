@@ -92,12 +92,16 @@ export const getNumQuestionsForUser = async (num, userId) => {
 };
 
 export const clearArchiveQuestions = async (userId) => {
-  // eslint-disable-next-line new-cap
-  const userObjectId = ObjectId(userId);
-  const res = await Question.updateMany([
-    { $pull: { archive_mode: userObjectId } },
-  ]);
-  return res;
+  try {
+    // eslint-disable-next-line new-cap
+    const userObjectId = ObjectId(userId);
+    await Question.updateMany(
+      { $pull: { archive_mode: { $in: [userObjectId] } } },
+    );
+  } catch (error) {
+    console.log(error);
+    throw new Error(`Problem clearing archive questions: ${error}`);
+  }
 };
 
 export const getQuestionsToRate = async (id) => {
