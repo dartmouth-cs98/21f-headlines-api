@@ -71,23 +71,23 @@ export const getNumQuestionsForUser = async (num, userId) => {
     // },
     { $match: { in_daily_quiz: { $ne: null } } },
     { $sample: { size: parseInt(num, 10) } },
-    // {
-    //   $lookup: {
-    //     from: 'archivequestions',
-    //     localField: '_id',
-    //     foreignField: 'questionId',
-    //     as: 'archivequestion',
-    //   },
-    // },
     {
-      // eslint-disable-next-line no-dupe-keys
       $lookup: {
-        from: 'dailychallenges',
-        localField: 'in_daily_quiz',
-        foreignField: '_id',
-        as: 'daily_challenge',
+        from: 'archivequestions',
+        localField: '_id',
+        foreignField: 'questionId',
+        as: 'archivequestion',
       },
     },
+    // {
+    //   // eslint-disable-next-line no-dupe-keys
+    //   $lookup: {
+    //     from: 'dailychallenges',
+    //     localField: 'in_daily_quiz',
+    //     foreignField: '_id',
+    //     as: 'daily_challenge',
+    //   },
+    // },
     // $and: [
     //   { $match: { in_daily_quiz: { $ne: null } } },
     //   { $match: { 'archivequestion.userId': { $ne: userId } } },
