@@ -65,7 +65,7 @@ export const getNumQuestionsForUser = async (num, userId) => {
   // this only returns questions that have been in a daily challenge
   const res = await Question.aggregate([
     { $match: { in_daily_quiz: { $ne: null } } },
-    { $sample: { size: parseInt(num, 10) } },
+    { $sample: { size: 1 } },
     {
       $lookup: {
         from: 'dailychallenges',
