@@ -68,6 +68,11 @@ router.route('/questions')
           console.log('in get num questions for user');
           const questions = await Questions.getNumQuestionsForUser(req.query.num, req.query.userId);
           res.json({ questions });
+          if (questions.length === 0) {
+            Questions.clearArchiveQuestions(req.query.userId);
+          }
+          const questionsSecond = await Questions.getNumQuestionsForUser(req.query.num, req.query.userId);
+          res.json({ questionsSecond });
         } else if (req.query.userId) {
           if (req.query.accepted) {
             // to get all accepted qns submitted by a particular user
