@@ -13,6 +13,7 @@ const QuestionSchema = new Schema({
   report: [String],
   user: { type: Schema.Types.ObjectId, ref: 'User', default: null },
   reviewer: { type: [{ type: Schema.Types.ObjectId, ref: 'User' }], default: [] },
+  archive_mode: { type: [{ type: Schema.Types.ObjectId, ref: 'User' }], default: [] },
 },
 {
   toObject: { virtuals: true },
