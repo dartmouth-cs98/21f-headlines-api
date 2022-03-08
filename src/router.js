@@ -65,6 +65,7 @@ router.route('/questions')
     try {
       if (req.currentUser) {
         if (req.query.clear && req.query.userId) {
+          console.log('calling clear archive questions now');
           await Questions.clearArchiveQuestions(req.query.userId);
         } else if (req.query.userId && req.query.num) {
           console.log('in get num questions for user');
