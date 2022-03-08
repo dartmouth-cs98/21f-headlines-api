@@ -68,11 +68,6 @@ router.route('/questions')
           console.log('in get num questions for user');
           const questions = await Questions.getNumQuestionsForUser(req.query.num, req.query.userId);
           res.json({ questions });
-          if (questions.length === 0) {
-            Questions.clearArchiveQuestions(req.query.userId);
-          }
-          const questionsSecond = await Questions.getNumQuestionsForUser(req.query.num, req.query.userId);
-          res.json({ questionsSecond });
         } else if (req.query.userId) {
           if (req.query.accepted) {
             // to get all accepted qns submitted by a particular user
@@ -123,7 +118,7 @@ router.route('/questions')
       console.log('trying to clear archive questions');
       if (req.query.userId) {
         console.log('calling clear archive questions now');
-        await Questions.clearArchiveQuestions(req.query.userId);
+        await Questions.clearArchiveQuestions(req.body.userId);
       }
     } catch (error) {
       res.status(422).send({ error: error.toString() });
