@@ -58,53 +58,35 @@ export const getNumQuestions = async (num) => {
 // when you call this, you should then check if the returned list is empty
 // if it is, then you should call the clear questions thing and then call it again
 export const getNumQuestionsForUser = async (num, userId) => {
+  // eslint-disable-next-line new-cap
+  const objectID = ObjectId(userId);
   // used this: https://stackoverflow.com/questions/2824157/random-record-from-mongodb
   // and this: https://stackoverflow.com/questions/33194825/find-objects-created-in-last-week-in-mongo/46906862
   // this only returns questions that have been in a daily challenge
   const res = await Question.aggregate([
-    // {
-    // $lookup: {
-    //   from: 'dailychallenges',
-    //   localField: 'in_daily_quiz',
-    //   foreignField: '_id',
-    //   as: 'daily_challenge',
-    // },
     { $match: { in_daily_quiz: { $ne: null } } },
     { $sample: { size: parseInt(num, 10) } },
     {
       $lookup: {
-        from: 'archivequestions',
-        localField: '_id',
-        foreignField: 'questionId',
-        as: 'archivequestion',
+        from: 'dailychallenges',
+        localField: 'in_daily_quiz',
+        foreignField: '_id',
+        as: 'daily_challenge',
       },
     },
-    { $match: { 'archivequestion.userId': { $ne: userId } } },
-    // {
-    //   // eslint-disable-next-line no-dupe-keys
-    //   $lookup: {
-    //     from: 'dailychallenges',
-    //     localField: 'in_daily_quiz',
-    //     foreignField: '_id',
-    //     as: 'daily_challenge',
-    //   },
-    // },
-    // $and: [
-    //   { $match: { in_daily_quiz: { $ne: null } } },
-    //   { $match: { 'archivequestion.userId': { $ne: userId } } },
-    // {
-    //   $or: [
-    //     { $match: { 'archivequestion.userId': { $ne: userId } } },
-    //     // there's a question that's not in the archive question model at all
-    //     // { _id: { $nin: ['archivequestion.questionId'] } },
-    //     console.log('archive question question id'),
-    //     console.log('archivequestion.questionId'),
-    //   ],
-    // },
-    // ],
-    // },
-    // console.log('end of aggregation'),
-    // { $sample: { size: parseInt(num, 10) } },
+    {
+      $match: {
+        $or: [
+          { archive_mode: { $exists: false } },
+          {
+            $and: [
+              { archive_mode: { $nin: [objectID] } },
+              { archive_mode: { $exists: true } },
+            ],
+          },
+        ],
+      },
+    },
   ]);
   return res;
 };
