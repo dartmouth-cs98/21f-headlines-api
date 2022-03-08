@@ -34,6 +34,14 @@ export const getQuestions = async () => {
   }
 };
 
+// Gets questions for backup quiz
+export const getBackupQuestions = async (num) => {
+  // No idea why agggregate works and find just totally doesn't work...
+  const res = await Question.aggregate([{ $match: { backupQuestion: 'true' } }, { $sample: { size: num } }]);
+  const justIds = res.map((obj) => { return obj._id; });
+  return justIds;
+};
+// Gets questions for archive mode
 export const getNumQuestions = async (num) => {
   // used this: https://stackoverflow.com/questions/2824157/random-record-from-mongodb
   // and this: https://stackoverflow.com/questions/33194825/find-objects-created-in-last-week-in-mongo/46906862

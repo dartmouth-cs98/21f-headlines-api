@@ -242,7 +242,7 @@ router.route('/dailyChallenges')
   .get(async (req, res) => {
     try {
       if (req.currentUser) {
-        const challenge = await DailyChallenge.getDailyChallenge(req.query.date);
+        const challenge = await DailyChallenge.getDailyChallenge(req.query.date, req.query.shouldGenerate);
         res.json(challenge);
       } else {
         res.status(401).send('Not authorized');
