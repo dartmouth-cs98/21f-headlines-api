@@ -95,7 +95,7 @@ export const clearArchiveQuestions = async (userId) => {
   // eslint-disable-next-line new-cap
   const userObjectId = ObjectId(userId);
   const res = await Question.updateMany([
-    { $pull: { archive_mode: { User: userObjectId } } },
+    { $pull: { archive_mode: userObjectId } },
   ]);
   return res;
 };
