@@ -62,7 +62,6 @@ export const getNumQuestionsForUser = async (num, userId) => {
   // and this: https://stackoverflow.com/questions/33194825/find-objects-created-in-last-week-in-mongo/46906862
   // this only returns questions that have been in a daily challenge
   const res = await Question.aggregate([
-    console.log('aggregating questions for archive mode'),
     // {
     // $lookup: {
     //   from: 'dailychallenges',
