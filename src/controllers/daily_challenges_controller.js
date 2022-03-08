@@ -16,13 +16,14 @@ export const createDailyChallenge = async (challenge) => {
   }
 };
 
-export const getDailyChallenge = async (date) => {
+export const getDailyChallenge = async (date, shouldGenerate = 'false') => {
+  shouldGenerate = (shouldGenerate === 'true');
   try {
     // used this: https://stackoverflow.com/questions/29327222/mongodb-find-created-results-by-date-today/29327353
     const { start, end } = getStartEndDate(date);
     let challenge = await DailyChallenge.findOne({ date: { $gte: start, $lt: end } }).populate('questions');
     // First check that there is a dailyChallenge
-    if (challenge == null) {
+    if (challenge == null && shouldGenerate) {
       // Get 6 questions
       console.log('Daily Challenge hadn\'t been created');
       const backupQuestions = await getBackupQuestions(6);
@@ -35,7 +36,7 @@ export const getDailyChallenge = async (date) => {
       // Make sure it actually has all 6 questions.
       const questionsMissing = 6 - challenge.questions.length;
       console.log(questionsMissing);
-      if (questionsMissing > 0) {
+      if (questionsMissing > 0 && shouldGenerate) {
         const backupQuestions = await getBackupQuestions(questionsMissing);
         challenge = await DailyChallenge.findByIdAndUpdate(challenge.id, { $addToSet: { questions: backupQuestions } }, { safe: true, upsert: true, new: true }).populate('questions');
       }
