@@ -63,36 +63,46 @@ export const getNumQuestionsForUser = async (num, userId) => {
   // this only returns questions that have been in a daily challenge
   const res = await Question.aggregate([
     console.log('aggregating questions for archive mode'),
+    // {
+    // $lookup: {
+    //   from: 'dailychallenges',
+    //   localField: 'in_daily_quiz',
+    //   foreignField: '_id',
+    //   as: 'daily_challenge',
+    // },
+    { $match: { in_daily_quiz: { $ne: null } } },
+    { $sample: { size: parseInt(num, 10) } },
     {
-      // $lookup: {
-      //   from: 'dailychallenges',
-      //   localField: 'in_daily_quiz',
-      //   foreignField: '_id',
-      //   as: 'daily_challenge',
-      // },
-      // eslint-disable-next-line no-dupe-keys
       $lookup: {
         from: 'archivequestions',
         localField: '_id',
         foreignField: 'questionId',
         as: 'archivequestion',
       },
-      $and: [
-        { $match: { in_daily_quiz: { $ne: null } } },
-        { $match: { 'archivequestion.userId': { $ne: userId } } },
-        // {
-        //   $or: [
-        //     { $match: { 'archivequestion.userId': { $ne: userId } } },
-        //     // there's a question that's not in the archive question model at all
-        //     // { _id: { $nin: ['archivequestion.questionId'] } },
-        //     console.log('archive question question id'),
-        //     console.log('archivequestion.questionId'),
-        //   ],
-        // },
-      ],
+      // eslint-disable-next-line no-dupe-keys
+      $lookup: {
+        from: 'dailychallenges',
+        localField: 'in_daily_quiz',
+        foreignField: '_id',
+        as: 'daily_challenge',
+      },
     },
-    console.log('end of aggregation'),
-    { $sample: { size: parseInt(num, 10) } },
+    // $and: [
+    //   { $match: { in_daily_quiz: { $ne: null } } },
+    //   { $match: { 'archivequestion.userId': { $ne: userId } } },
+    // {
+    //   $or: [
+    //     { $match: { 'archivequestion.userId': { $ne: userId } } },
+    //     // there's a question that's not in the archive question model at all
+    //     // { _id: { $nin: ['archivequestion.questionId'] } },
+    //     console.log('archive question question id'),
+    //     console.log('archivequestion.questionId'),
+    //   ],
+    // },
+    // ],
+    // },
+    // console.log('end of aggregation'),
+    // { $sample: { size: parseInt(num, 10) } },
   ]);
   return res;
 };
