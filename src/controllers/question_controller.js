@@ -92,7 +92,6 @@ export const getNumQuestionsForUser = async (num, userId) => {
 };
 
 export const clearArchiveQuestions = async (userId) => {
-  console.log('clearing archive questions');
   // eslint-disable-next-line new-cap
   const userObjectId = ObjectId(userId);
   const res = await Question.updateMany([
