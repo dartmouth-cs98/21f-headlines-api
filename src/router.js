@@ -229,7 +229,7 @@ router.route('/dailyChallenges')
   })
   .get(async (req, res) => {
     try {
-      if (req.currentUser) {
+      if (!req.currentUser) {
         const challenge = await DailyChallenge.getDailyChallenge(req.query.date);
         res.json(challenge);
       } else {
