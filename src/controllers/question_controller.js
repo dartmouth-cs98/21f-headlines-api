@@ -61,16 +61,11 @@ export const getNumQuestions = async (num) => {
   return res;
 };
 
-// create a new version of getNumQuestions which only returns questions that have been in a daily challenge
-// and which the given user has never seen (doesn't exist as archive question)
-// when you call this, you should then check if the returned list is empty
-// if it is, then you should call the clear questions thing and then call it again
+// grab questions that have been in daily challenge and that the user hasn't seen in archive mode
 export const getNumQuestionsForUser = async (num, userId) => {
   // eslint-disable-next-line new-cap
   const objectID = ObjectId(userId);
   // used this: https://stackoverflow.com/questions/2824157/random-record-from-mongodb
-  // and this: https://stackoverflow.com/questions/33194825/find-objects-created-in-last-week-in-mongo/46906862
-  // this only returns questions that have been in a daily challenge
   const res = await Question.aggregate([
     { $match: { in_daily_quiz: { $ne: null } } },
     { $sample: { size: parseInt(num, 10) } },
@@ -100,6 +95,8 @@ export const getNumQuestionsForUser = async (num, userId) => {
 };
 
 export const clearArchiveQuestions = async (userId) => {
+  // when the user has seen all the possible daily challenge questions,
+  // we clear their name from all questions for archive mode
   try {
     // eslint-disable-next-line new-cap
     const userObjectId = ObjectId(userId);

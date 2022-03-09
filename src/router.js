@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import * as Articles from './controllers/article_controller';
 import * as Questions from './controllers/question_controller';
-import * as ArchiveQuestion from './controllers/archive_question_controller';
 import * as Users from './controllers/user_controller';
 import * as DailyChallenge from './controllers/daily_challenges_controller';
 import * as UserChallenge from './controllers/user_challenges_controller';
@@ -64,8 +63,8 @@ router.route('/questions')
   .get(async (req, res) => {
     try {
       if (req.currentUser) {
+        // used for fetching questions for archive mode
         if (req.query.userId && req.query.num) {
-          console.log('in get num questions for user');
           const questions = await Questions.getNumQuestionsForUser(req.query.num, req.query.userId);
           res.json({ questions });
         } else if (req.query.userId) {
@@ -115,9 +114,7 @@ router.route('/questions')
   })
   .put(async (req, res) => {
     try {
-      console.log('trying to clear archive questions');
       if (req.query.userId) {
-        console.log('calling clear archive questions now');
         await Questions.clearArchiveQuestions(req.query.userId);
       }
     } catch (error) {
@@ -204,27 +201,6 @@ router.delete('/deleteQuestions/:lowScore', async (req, res) => {
     res.status(420).send({ error: error.toString() });
   }
 });
-
-router.route('/archiveQuestions')
-  .post(async (req, res) => {
-    try {
-      await ArchiveQuestion.createArchiveQuestion(req.body.userId, req.body.questionId);
-      res.json({ success: 'true' });
-    } catch (error) {
-      res.status(420).send({ error: error.toString() });
-    }
-  });
-
-router.route('/archiveQuestions/:userId')
-  .post(async (req, res) => {
-    try {
-      // clear all questions when user has seen them all
-      await ArchiveQuestion.clearArchiveQuestions(req.params.userId);
-      res.json({ success: 'true' });
-    } catch (error) {
-      res.status(420).send({ error: error.toString() });
-    }
-  });
 
 router.route('/dailyChallenges')
   .post(async (req, res) => {
