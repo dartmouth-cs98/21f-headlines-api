@@ -32,11 +32,11 @@ export const getDailyChallenge = async (date, shouldGenerate = 'false') => {
       // console.log(challenge);
       // create a new daily challenge with these questions.
       // questions = await
-    } else {
+    } else if (shouldGenerate) {
       // Make sure it actually has all 6 questions.
       const questionsMissing = 6 - challenge.questions.length;
       console.log(questionsMissing);
-      if (questionsMissing > 0 && shouldGenerate) {
+      if (questionsMissing > 0) {
         const backupQuestions = await getBackupQuestions(questionsMissing);
         challenge = await DailyChallenge.findByIdAndUpdate(challenge.id, { $addToSet: { questions: backupQuestions } }, { safe: true, upsert: true, new: true }).populate('questions');
       }
