@@ -1,12 +1,3 @@
-# Headlines
-
-![Team Photo](https://github.com/dartmouth-cs98/21f-headlines/blob/main/DocumentationImages/teamselfie.jpeg)
-
-Headlines is a mobile app that is a trivia game about current events. Users can currently play in singleplayer mode. To learn about current events, users can also browse articles in the app.
-
-<img width="352" alt="Screen Shot 2021-11-23 at 3 44 57 PM" src="https://user-images.githubusercontent.com/59703535/143134150-e02973d5-2016-468e-b8b3-9369141e0c82.png">
-
-<img width="352" alt="Screen Shot 2021-11-23 at 3 31 05 PM" src="https://user-images.githubusercontent.com/59703535/143133667-e2259cae-4274-422e-801a-4e90bf71bd9a.png">
 
 ## Usage
 
@@ -92,10 +83,5 @@ For more instructions: https://www.digitalocean.com/community/tutorials/workflow
 
 ## Deployment
 
-Not deployed yet
+This backend is deployed via Heroku with automatic deployment from this repository
 
-## Authors
-
-TODO: list of authors
-
-## Acknowledgments
